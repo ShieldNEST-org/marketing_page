@@ -1,51 +1,84 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-/* Floating animations */
-@keyframes float {
+@custom-variant dark (&:is(.dark *));
+
+/* Custom subtle pulse animation - 50% slower and less intense than default */
+@keyframes subtlePulse {
   0%, 100% {
-    transform: translateY(0px);
+    opacity: 1;
   }
   50% {
-    transform: translateY(-20px);
+    opacity: 0.75;
   }
 }
 
-@keyframes float-delayed {
+/* Slow number pulse for loading data */
+@keyframes pulse-slow {
   0%, 100% {
-    transform: translateY(0px);
+    opacity: 1;
+    transform: scale(1);
   }
   50% {
-    transform: translateY(-25px);
+    opacity: 0.85;
+    transform: scale(1.01);
   }
 }
 
-@keyframes float-slow {
+/* Glow effect when updating */
+@keyframes glow-pulse {
   0%, 100% {
-    transform: translateY(0px);
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
   }
   50% {
-    transform: translateY(-15px);
+    text-shadow: 0 0 20px rgba(96, 165, 250, 0.6),
+                 0 0 30px rgba(96, 165, 250, 0.4);
   }
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.animate-float-delayed {
-  animation: float-delayed 4s ease-in-out infinite;
-  animation-delay: 0.5s;
+.animate-glow-pulse {
+  animation: glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.animate-float-slow {
-  animation: float-slow 5s ease-in-out infinite;
-  animation-delay: 1s;
+/* Add blue tint to updating numbers */
+.text-updating {
+  color: rgb(96, 165, 250) !important;
+  transition: color 0.3s ease;
 }
 
-/* Gradient text animation */
-@keyframes gradient-shift {
+/* Green blink animation for select wallet */
+@keyframes greenBlink {
+  0%, 100% {
+    border-color: rgb(34, 197, 94); /* green-500 */
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+  }
+  50% {
+    border-color: rgb(22, 163, 74); /* green-600 */
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.4);
+  }
+}
+
+/* Neomorph shadow effect for validator cards */
+@keyframes neomorphGlow {
+  0%, 100% {
+    box-shadow: 
+      inset 2px 2px 6px rgba(0, 0, 0, 0.1),
+      inset -2px -2px 6px rgba(255, 255, 255, 0.1),
+      0 4px 12px rgba(168, 85, 247, 0.2);
+  }
+  50% {
+    box-shadow: 
+      inset 2px 2px 6px rgba(0, 0, 0, 0.15),
+      inset -2px -2px 6px rgba(255, 255, 255, 0.15),
+      0 6px 16px rgba(168, 85, 247, 0.3);
+  }
+}
+
+/* Gradient shift animation for hero backgrounds */
+@keyframes gradientShift {
   0%, 100% {
     background-position: 0% 50%;
   }
@@ -54,44 +87,1687 @@
   }
 }
 
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
-}
-
-/* Pulse glow effect */
-@keyframes pulse-glow {
+/* Gradient text animation */
+@keyframes gradientText {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+    background-position: 0% 50%;
   }
   50% {
-    box-shadow: 0 0 40px rgba(168, 85, 247, 0.8);
+    background-position: 100% 50%;
   }
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+/* Scale in animation for modals */
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+/* Color-shifting pulse animation for membership CTA - alternates between teal/green and purple */
+@keyframes colorPulse {
+  0%, 100% {
+    box-shadow: 
+      0 4px 12px rgba(20, 184, 166, 0.5),
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      inset 0 1px 3px rgba(255, 255, 255, 0.2),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.15),
+      0 0 40px rgba(20, 184, 166, 0.4);
+    border-color: rgba(20, 184, 166, 0.5);
+  }
+  50% {
+    box-shadow: 
+      0 4px 12px rgba(168, 85, 247, 0.5),
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      inset 0 1px 3px rgba(255, 255, 255, 0.2),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.15),
+      0 0 40px rgba(168, 85, 247, 0.4);
+    border-color: rgba(168, 85, 247, 0.5);
+  }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: #1e293b;
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #a855f7, #ec4899);
-  border-radius: 5px;
+@layer utilities {
+  body {
+    font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  
+  /* CoreumDash Heading Font */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
+  }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #9333ea, #db2777);
+@layer base {
+  /* CRITICAL: Default to dark theme to prevent flash */
+  :root {
+    /* Default to dark theme colors to prevent initial flash */
+    --background: 222 18% 5.5%; /* #0e0e0e solid */
+    --foreground: 220 17% 98%; /* #ffffff primaryWhite */
+    --card: 223 20% 7%; /* #101216 cardBg */
+    --card-foreground: 220 17% 98%;
+    --popover: 223 20% 7%;
+    --popover-foreground: 220 17% 98%;
+    --primary: 158 75% 51%; /* #25d695 CoreumDash Green */
+    --primary-foreground: 222 18% 5.5%;
+    --secondary: 0 0% 17%; /* #2d2d2d primaryBlack */
+    --secondary-foreground: 220 17% 98%;
+    --muted: 0 0% 15%; /* #262626 secondaryBlack */
+    --muted-foreground: 218 11% 65%; /* #8892b0 slate */
+    --accent: 158 75% 51%; /* #25d695 green */
+    --accent-foreground: 222 18% 5.5%;
+    --destructive: 353 77% 48%; /* #d81d3c primaryRed */
+    --destructive-foreground: 220 17% 98%;
+    --border: 221 14% 11%; /* #1b1d23 borderDefault */
+    --input: 221 14% 11%;
+    --ring: 158 75% 51%; /* #25d695 green */
+    --chart-1: 158 75% 51%; /* green */
+    --chart-2: 353 77% 48%; /* red */
+    --chart-3: 207 90% 61%; /* blue */
+    --chart-4: 45 99% 59%; /* yellow */
+    --chart-5: 271 81% 60%; /* purple */
+    --radius: 1rem;
+    --sidebar-background: 222 18% 5.5%;
+    --sidebar-foreground: 220 17% 98%;
+    --sidebar-primary: 158 75% 51%;
+    --sidebar-primary-foreground: 222 18% 5.5%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 220 17% 98%;
+    --sidebar-border: 221 14% 11%;
+    --sidebar-ring: 158 75% 51%;
+  }
+
+  /* Light mode - ONLY when light class is explicitly added */
+  :root.light {
+    /* ShieldNest Light Mode - Soft and Refined */
+    --background: 210 25% 96%; /* Soft blue-gray background #f2f5f9 */
+    --foreground: 220 20% 15%; /* Dark text for readability #1e2836 */
+    --card: 210 30% 98%; /* Very light cards #f9fafb */
+    --card-foreground: 220 20% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 15%;
+    --primary: 158 75% 51%; /* CoreumDash Green #25d695 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 20% 93%; /* Light gray-blue #e8ecf1 */
+    --secondary-foreground: 220 20% 15%;
+    --muted: 210 15% 90%; /* Muted light gray #e1e5ea */
+    --muted-foreground: 220 15% 40%; /* Mid-gray text #5a6978 */
+    --accent: 158 75% 51%; /* CoreumDash Green */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 353 77% 48%; /* CoreumDash Red #d81d3c */
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 18% 75%; /* Darker border for definition #a8b4c5 */
+    --input: 220 18% 75%;
+    --ring: 158 75% 51%; /* CoreumDash Green */
+    --chart-1: 158 75% 51%; /* CoreumDash Green */
+    --chart-2: 353 77% 48%; /* CoreumDash Red */
+    --chart-3: 207 90% 54%; /* Bright blue */
+    --chart-4: 43 96% 56%; /* Bright yellow */
+    --chart-5: 271 81% 60%; /* Purple */
+    --sidebar-background: 210 25% 96%;
+    --sidebar-foreground: 220 20% 15%;
+    --sidebar-primary: 158 75% 51%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 93%;
+    --sidebar-accent-foreground: 220 20% 15%;
+    --sidebar-border: 220 18% 75%;
+    --sidebar-ring: 158 75% 51%;
+  }
+
+  .dark {
+    /* CoreumDash Dark Theme - Main colors */
+    --background: 222 18% 5.5%; /* #0e0e0e solid */
+    --foreground: 220 17% 98%; /* #ffffff primaryWhite */
+    --card: 223 20% 7%; /* #101216 cardBg */
+    --card-foreground: 220 17% 98%;
+    --popover: 223 20% 7%;
+    --popover-foreground: 220 17% 98%;
+    --primary: 158 75% 51%; /* #25d695 CoreumDash Green */
+    --primary-foreground: 222 18% 5.5%;
+    --secondary: 0 0% 17%; /* #2d2d2d primaryBlack */
+    --secondary-foreground: 220 17% 98%;
+    --muted: 0 0% 15%; /* #262626 secondaryBlack */
+    --muted-foreground: 218 11% 65%; /* #8892b0 slate */
+    --accent: 158 75% 51%; /* #25d695 green */
+    --accent-foreground: 222 18% 5.5%;
+    --destructive: 353 77% 48%; /* #d81d3c primaryRed */
+    --destructive-foreground: 220 17% 98%;
+    --border: 221 14% 11%; /* #1b1d23 borderDefault */
+    --input: 221 14% 11%;
+    --ring: 158 75% 51%; /* #25d695 green */
+    --chart-1: 158 75% 51%; /* green */
+    --chart-2: 353 77% 48%; /* red */
+    --chart-3: 207 90% 61%; /* blue */
+    --chart-4: 45 99% 59%; /* yellow */
+    --chart-5: 271 81% 60%; /* purple */
+    --sidebar-background: 222 18% 5.5%;
+    --sidebar-foreground: 220 17% 98%;
+    --sidebar-primary: 158 75% 51%;
+    --sidebar-primary-foreground: 222 18% 5.5%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 220 17% 98%;
+    --sidebar-border: 221 14% 11%;
+    --sidebar-ring: 158 75% 51%;
+  }
+}
+
+/* Accent hue and card tint CSS variables with fallbacks */
+@layer base {
+  :root {
+    --accent-h: 262; /* controlled by slider */
+    --card-tint: 0.15; /* 0..0.24 via slider */
+    --ui-darkness: 0; /* 0 (light) .. 100 (dark) */
+  }
+}
+
+/* Color Scheme Variants (controlled by data-color-scheme on <html>) */
+@layer base {
+  html[data-color-scheme="purple"] {
+    --chart-1: 262 83% 67%;
+    --chart-2: 252 82% 60%;
+  }
+  html[data-color-scheme="blue"] {
+    --chart-1: 217 91% 60%;
+    --chart-2: 203 100% 45%;
+  }
+  html[data-color-scheme="green"] {
+    --chart-1: 142 71% 45%;
+    --chart-2: 160 84% 39%;
+  }
+  html[data-color-scheme="orange"] {
+    --chart-1: 24 94% 53%;
+    --chart-2: 16 88% 50%;
+  }
+  html[data-color-scheme="teal"] {
+    --chart-1: 173 80% 40%;
+    --chart-2: 187 85% 43%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+}
+
+/* Neomorphic Design System - Light & Dark Theme Support */
+@layer utilities {
+  /* Light mode: softer cards with stronger borders */
+  .neo-card {
+    background: hsl(var(--card));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1.5px solid hsl(var(--border));
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Dark mode: original dark styling */
+  .dark .neo-card {
+    background: #101216;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* Removed global green hover - cards now use individual colored borders via Tailwind classes */
+  /*.neo-card-hover:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(37, 214, 149, 0.4);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(37, 214, 149, 0.2),
+      0 0 30px rgba(37, 214, 149, 0.3);
+  }
+
+  .dark .neo-card-hover:hover {
+    border-color: rgba(37, 214, 149, 0.4);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(37, 214, 149, 0.2),
+      0 0 30px rgba(37, 214, 149, 0.3);
+  }*/
+
+  /* CoreumDash Colored Cards with 3D effects */
+  
+  /* GREEN card - Primary CoreumDash color */
+  .neo-float-green {
+    background: hsl(var(--card));
+    border: 2px solid rgba(37, 214, 149, 0.3);
+    box-shadow: 0 2px 8px rgba(37, 214, 149, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dark .neo-float-green {
+    background: #101216;
+    border: 1px solid rgba(37, 214, 149, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .neo-float-green:hover {
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(37, 214, 149, 0.6);
+    box-shadow: 
+      0 8px 16px rgba(37, 214, 149, 0.12),
+      0 4px 8px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(37, 214, 149, 0.3);
+  }
+
+  .dark .neo-float-green:hover {
+    border-color: rgba(37, 214, 149, 0.4);
+    box-shadow: 
+      0 12px 24px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(37, 214, 149, 0.2),
+      0 0 20px rgba(37, 214, 149, 0.2),
+      inset 0 0 15px rgba(37, 214, 149, 0.03);
+  }
+
+  /* PURPLE card - Violet accent */
+  .neo-float-purple {
+    background: hsl(var(--card));
+    border: 2px solid rgba(124, 58, 237, 0.3);
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dark .neo-float-purple {
+    background: #101216;
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .neo-float-purple:hover {
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(124, 58, 237, 0.6);
+    box-shadow: 
+      0 8px 16px rgba(124, 58, 237, 0.12),
+      0 4px 8px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(124, 58, 237, 0.3);
+  }
+
+  .dark .neo-float-purple:hover {
+    border-color: rgba(124, 58, 237, 0.4);
+    box-shadow: 
+      0 12px 24px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(124, 58, 237, 0.2),
+      0 0 20px rgba(124, 58, 237, 0.2),
+      inset 0 0 15px rgba(124, 58, 237, 0.03);
+  }
+
+  /* BLUE card - Blue accent */
+  .neo-float-blue {
+    background: hsl(var(--card));
+    border: 2px solid rgba(77, 156, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(77, 156, 255, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dark .neo-float-blue {
+    background: #101216;
+    border: 1px solid rgba(77, 156, 255, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .neo-float-blue:hover {
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(77, 156, 255, 0.6);
+    box-shadow: 
+      0 8px 16px rgba(77, 156, 255, 0.12),
+      0 4px 8px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(77, 156, 255, 0.3);
+  }
+
+  .dark .neo-float-blue:hover {
+    border-color: rgba(77, 156, 255, 0.4);
+    box-shadow: 
+      0 12px 24px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(77, 156, 255, 0.2),
+      0 0 20px rgba(77, 156, 255, 0.2),
+      inset 0 0 15px rgba(77, 156, 255, 0.03);
+  }
+
+  /* ORANGE card - Orange/Fire accent */
+  .neo-float-orange {
+    background: hsl(var(--card));
+    border: 2px solid rgba(255, 140, 66, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 140, 66, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dark .neo-float-orange {
+    background: #101216;
+    border: 1px solid rgba(255, 140, 66, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .neo-float-orange:hover {
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(255, 140, 66, 0.6);
+    box-shadow: 
+      0 8px 16px rgba(255, 140, 66, 0.12),
+      0 4px 8px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(255, 140, 66, 0.3);
+  }
+
+  .dark .neo-float-orange:hover {
+    border-color: rgba(255, 140, 66, 0.4);
+    box-shadow: 
+      0 12px 24px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 140, 66, 0.2),
+      0 0 20px rgba(255, 140, 66, 0.2),
+      inset 0 0 15px rgba(255, 140, 66, 0.03);
+  }
+  
+  /* CYAN/TEAL card */
+  .neo-float-teal {
+    background: hsl(var(--card));
+    border: 2px solid rgba(6, 182, 212, 0.3);
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dark .neo-float-teal {
+    background: #101216;
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .neo-float-teal:hover {
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(6, 182, 212, 0.6);
+    box-shadow: 
+      0 8px 16px rgba(6, 182, 212, 0.12),
+      0 4px 8px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(6, 182, 212, 0.3);
+  }
+
+  .dark .neo-float-teal:hover {
+    border-color: rgba(6, 182, 212, 0.4);
+    box-shadow: 
+      0 12px 24px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(6, 182, 212, 0.2),
+      0 0 20px rgba(6, 182, 212, 0.2),
+      inset 0 0 15px rgba(6, 182, 212, 0.03);
+  }
+
+  /* Glass morphism effect - Light & Dark Theme Support */
+  .neo-glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .dark .neo-glass {
+    background: rgba(16, 18, 22, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Pressed/Inset effect - Light & Dark Theme Support */
+  .neo-pressed {
+    background: hsl(var(--muted));
+    border: 1px solid hsl(var(--border));
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .neo-pressed {
+    background: #101216;
+    border: 1px solid #1b1d23;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Gradient backgrounds - Light & Dark Theme Support */
+  /* OPTIMIZED: No pseudo-element to prevent flash on load */
+  .neo-gradient-bg {
+    background: hsl(var(--background));
+    position: relative;
+    /* Inline the gradient directly - no ::before flash */
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(37, 214, 149, 0.06) 0%, transparent 50%),
+      radial-gradient(circle at 80% 30%, rgba(124, 58, 237, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 50% 80%, rgba(77, 156, 255, 0.04) 0%, transparent 50%);
+  }
+
+  .dark .neo-gradient-bg {
+    background: #0a0a0c; /* Slightly darker for better card separation */
+    /* Inline the gradient directly - no ::before flash */
+    /* Enhanced gradients with more pronounced shifting */
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(37, 214, 149, 0.10) 0%, transparent 50%),
+      radial-gradient(circle at 80% 30%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 50% 80%, rgba(59, 130, 246, 0.06) 0%, transparent 50%);
+  }
+
+  /* Icon containers with 3D glow - CoreumDash style - COLOR VARIATIONS */
+  
+  /* CoreumDash Icon Boxes - Small, 3D, at top of stat cards */
+  
+  /* GREEN Icon - BRIGHT saturated background */
+  .neo-icon-glow-green,
+  .icon-dash-green {
+    min-width: 56px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #25d695 0%, #1fb881 100%);
+    color: #ffffff;
+    box-shadow: 
+      0 4px 12px rgba(37, 214, 149, 0.2),
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3),
+      inset 0 -4px 12px rgba(0, 0, 0, 0.4);
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  
+  /* PURPLE Icon - BRIGHT saturated background */
+  .neo-icon-glow-purple,
+  .icon-dash-purple {
+    min-width: 56px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+    color: #ffffff;
+    box-shadow: 
+      0 4px 12px rgba(168, 85, 247, 0.2),
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3),
+      inset 0 -4px 12px rgba(0, 0, 0, 0.4);
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  
+  /* BLUE/CYAN Icon - BRIGHT saturated background */
+  .neo-icon-glow-blue,
+  .neo-icon-glow-cyan,
+  .icon-dash-cyan {
+    min-width: 56px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4d9cff 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 
+      0 4px 12px rgba(77, 156, 255, 0.2),
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3),
+      inset 0 -4px 12px rgba(0, 0, 0, 0.4);
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  
+  /* ORANGE Icon with BRIGHT saturated background */
+  .neo-icon-glow-orange,
+  .icon-dash-orange {
+    min-width: 56px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff8c42 0%, #ff6b1a 100%);
+    color: #ffffff;
+    box-shadow: 
+      0 4px 12px rgba(255, 140, 66, 0.2),
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3),
+      inset 0 -4px 12px rgba(0, 0, 0, 0.4);
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  
+  /* YELLOW Icon - BRIGHT saturated background */
+  .neo-icon-glow-yellow,
+  .icon-dash-yellow {
+    min-width: 56px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ffbb29 0%, #f59e0b 100%);
+    color: #ffffff;
+    box-shadow: 
+      0 4px 12px rgba(255, 187, 41, 0.2),
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3),
+      inset 0 -4px 12px rgba(0, 0, 0, 0.4);
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  
+  /* RED Icon with STRONG 3D emboss */
+  .neo-icon-glow-red,
+  .icon-dash-red {
+    min-width: 56px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(216, 29, 60, 0.25) 0%, rgba(216, 29, 60, 0.08) 100%);
+    color: #d81d3c;
+    box-shadow: 
+      0 4px 12px rgba(216, 29, 60, 0.1),
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      inset 0 2px 4px rgba(255, 255, 255, 0.2),
+      inset 0 -4px 12px rgba(0, 0, 0, 0.3);
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  
+  /* TEAL/CYAN Icon with STRONG 3D emboss */
+  .neo-icon-glow-teal {
+    min-width: 56px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.25) 0%, rgba(6, 182, 212, 0.08) 100%);
+    color: #06b6d4;
+    box-shadow: 
+      0 4px 12px rgba(6, 182, 212, 0.1),
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      inset 0 2px 4px rgba(255, 255, 255, 0.2),
+      inset 0 -4px 12px rgba(0, 0, 0, 0.3);
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  
+  /* 3D depth layer on ALL icons - ENHANCED for visible emboss */
+  .neo-icon-glow-purple::before,
+  .neo-icon-glow-blue::before,
+  .neo-icon-glow-green::before,
+  .neo-icon-glow-orange::before,
+  .neo-icon-glow-teal::before,
+  .neo-icon-glow-cyan::before,
+  .neo-icon-glow-yellow::before,
+  .neo-icon-glow-red::before,
+  .icon-dash-purple::before,
+  .icon-dash-green::before,
+  .icon-dash-cyan::before,
+  .icon-dash-orange::before,
+  .icon-dash-yellow::before,
+  .icon-dash-red::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 50%, rgba(0, 0, 0, 0.2) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  /* Top highlight for STRONG 3D effect on ALL icons */
+  .neo-icon-glow-purple::after,
+  .neo-icon-glow-blue::after,
+  .neo-icon-glow-green::after,
+  .neo-icon-glow-orange::after,
+  .neo-icon-glow-teal::after,
+  .neo-icon-glow-cyan::after,
+  .neo-icon-glow-yellow::after,
+  .neo-icon-glow-red::after,
+  .icon-dash-purple::after,
+  .icon-dash-green::after,
+  .icon-dash-cyan::after,
+  .icon-dash-orange::after,
+  .icon-dash-yellow::after,
+  .icon-dash-red::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%);
+    border-radius: 50%;
+    filter: blur(1.5px);
+    opacity: 0.8;
+    z-index: 2;
+  }
+  
+  /* Icon hover states - reduced 3D effect to prevent glitching */
+  .group:hover .neo-icon-glow-green {
+    transform: scale(1.02);
+    box-shadow: 
+      0 4px 12px rgba(37, 214, 149, 0.25),
+      0 2px 4px rgba(0, 0, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.15),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.15s ease-out;
+  }
+  
+  .group:hover .neo-icon-glow-purple {
+    transform: scale(1.02);
+    box-shadow: 
+      0 4px 12px rgba(168, 85, 247, 0.25),
+      0 2px 4px rgba(0, 0, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.15),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.15s ease-out;
+  }
+  
+  .group:hover .neo-icon-glow-blue {
+    transform: scale(1.02);
+    box-shadow: 
+      0 4px 12px rgba(77, 156, 255, 0.25),
+      0 2px 4px rgba(0, 0, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.15),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.15s ease-out;
+  }
+  
+  .group:hover .neo-icon-glow-orange {
+    transform: scale(1.02);
+    box-shadow: 
+      0 4px 12px rgba(255, 140, 66, 0.25),
+      0 2px 4px rgba(0, 0, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.15),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.15s ease-out;
+  }
+  
+  .group:hover .neo-icon-glow-teal,
+  .group:hover .neo-icon-glow-cyan {
+    transform: scale(1.02);
+    box-shadow: 
+      0 4px 12px rgba(6, 182, 212, 0.25),
+      0 2px 4px rgba(0, 0, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.15),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.15s ease-out;
+  }
+  
+  .group:hover .neo-icon-glow-yellow {
+    transform: scale(1.02);
+    box-shadow: 
+      0 4px 12px rgba(255, 187, 41, 0.25),
+      0 2px 4px rgba(0, 0, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.15),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.15s ease-out;
+  }
+  
+  .group:hover .neo-icon-glow-red {
+    transform: scale(1.02);
+    box-shadow: 
+      0 4px 12px rgba(216, 29, 60, 0.25),
+      0 2px 4px rgba(0, 0, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.15),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.15s ease-out;
+  }
+  
+  /* Make SVG icons relative so they show above pseudo-elements */
+  .neo-icon-glow-purple svg,
+  .neo-icon-glow-blue svg,
+  .neo-icon-glow-green svg,
+  .neo-icon-glow-orange svg,
+  .neo-icon-glow-teal svg,
+  .neo-icon-glow-cyan svg,
+  .neo-icon-glow-yellow svg,
+  .neo-icon-glow-red svg {
+    position: relative;
+    z-index: 3;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  /* Smooth transitions - optimized for performance */
+  .neo-transition {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Performance optimizations for hover states */
+  .token-table-row {
+    will-change: background-color;
+    transform: translateZ(0); /* Force hardware acceleration */
+    backface-visibility: hidden; /* Prevent flickering */
+  }
+
+  .token-table-row:hover {
+    will-change: auto; /* Reset after hover */
+  }
+
+  /* Slide in animations */
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Subtle pulse animation for number changes - much gentler than animate-bounce */
+  .animate-pulse-subtle {
+    animation: subtlePulse 0.8s cubic-bezier(0.4, 0, 0.6, 1);
+  }
+  
+  /* Gradient shift animations for hero sections */
+  .animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease-in-out infinite;
+  }
+  
+  .animate-gradient-text {
+    background-size: 200% 200%;
+    animation: gradientText 5s ease-in-out infinite;
+  }
+}
+
+/* Scheme-driven visual overrides for immediate feedback */
+@layer utilities {
+  html[data-color-scheme="blue"] .neo-gradient-bg { background: linear-gradient(135deg, #e8f0ff 0%, #dbeafe 100%); }
+  html[data-color-scheme="green"] .neo-gradient-bg { background: linear-gradient(135deg, #e9fff3 0%, #dcfce7 100%); }
+  html[data-color-scheme="orange"] .neo-gradient-bg { background: linear-gradient(135deg, #fff3e8 0%, #ffedd5 100%); }
+  html[data-color-scheme="teal"] .neo-gradient-bg { background: linear-gradient(135deg, #e8fffb 0%, #ccfbf1 100%); }
+
+  /* Recolor the totals icon glow block based on scheme */
+  html[data-color-scheme="blue"] .neo-icon-glow-purple { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 20px rgba(59,130,246,0.4); }
+  html[data-color-scheme="green"] .neo-icon-glow-purple { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); box-shadow: 0 4px 20px rgba(34,197,94,0.4); }
+  html[data-color-scheme="orange"] .neo-icon-glow-purple { background: linear-gradient(135deg, #fb923c 0%, #f97316 100%); box-shadow: 0 4px 20px rgba(251,146,60,0.4); }
+  html[data-color-scheme="teal"] .neo-icon-glow-purple { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); box-shadow: 0 4px 20px rgba(20,184,166,0.4); }
+}
+
+/* Ensure original dark mode background behind cards */
+@layer utilities {
+  .dark .neo-gradient-bg {
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+  }
+}
+
+/* ==================================================
+   COREUMDASH STYLING SYSTEM
+   ================================================== */
+
+/* CoreumDash Gradient Buttons */
+.btn-coreum-green {
+  background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 25%, #7c3aed 50%, #6d28d9 75%, #5b21b6 100%);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 12px rgba(168, 85, 247, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: colorShift 4s ease-in-out infinite;
+}
+
+.btn-coreum-green::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-coreum-green:hover {
+  box-shadow: 
+    0 8px 24px rgba(168, 85, 247, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 3px rgba(255, 255, 255, 0.3),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px) scale(1.02);
+  background: linear-gradient(135deg, #c084fc 0%, #a855f7 25%, #8b5cf6 50%, #7c3aed 75%, #6d28d9 100%);
+  animation: colorShiftHover 2s ease-in-out infinite;
+}
+
+.btn-coreum-green:hover::before {
+  left: 100%;
+}
+
+.btn-coreum-green:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 
+    0 2px 8px rgba(168, 85, 247, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-coreum-red {
+  background: linear-gradient(to right, #d81d3c, #981329);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-coreum-red:hover {
+  box-shadow: 0 0 20px rgba(216, 29, 60, 0.3);
+  transform: translateY(-2px);
+}
+
+/* CoreumDash Card Styles with 3D hover - Dark Default, Light Override */
+.card-coreum {
+  background: #101216; /* Dark by default */
+  border-radius: 1rem;
+  padding: 1.5rem;
+  /* Enhanced border visibility for better separation */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.5), 
+    0 2px 4px -1px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    /* Outer glow for separation from background */
+    0 0 0 1px rgba(255, 255, 255, 0.02);
+  /* REMOVED: transition on initial render causes flash */
+  /* transition: all 0.4s cubic-bezier(0, 0, 0.2, 1); */
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* Neomorphic gradient border effect */
+.card-coreum::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(124, 58, 237, 0.08) 25%,
+    rgba(37, 214, 149, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.card-coreum:hover::before {
+  opacity: 1;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(124, 58, 237, 0.12) 25%,
+    rgba(37, 214, 149, 0.12) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+}
+
+.light .card-coreum {
+  background: hsl(var(--card));
+  border: 1.5px solid hsl(var(--border));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.light .card-coreum::before {
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.15) 0%,
+    rgba(37, 214, 149, 0.12) 50%,
+    rgba(59, 130, 246, 0.10) 100%
+  );
+  opacity: 0.5;
+}
+
+.light .card-coreum:hover::before {
+  opacity: 0.8;
+}
+
+/* Removed global green hover - cards now use individual colored borders via Tailwind classes */
+/*.card-coreum:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(37, 214, 149, 0.4);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(37, 214, 149, 0.2),
+    0 0 30px rgba(37, 214, 149, 0.3);
+}*/
+
+/* CoreumDash Glass Morphism - Dark Default, Light Override */
+.glass-coreum {
+  background: rgba(16, 18, 22, 0.8); /* Dark by default */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  /* REMOVED: transition on initial render causes flash */
+  /* transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); */
+  position: relative;
+  overflow: hidden;
+}
+
+.light .glass-coreum {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.glass-coreum::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.glass-coreum:hover {
+  background: rgba(16, 18, 22, 0.9);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(168, 85, 247, 0.2),
+    inset 0 1px 3px rgba(255, 255, 255, 0.15),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.light .glass-coreum:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1.5px solid rgba(124, 58, 237, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 0 20px rgba(124, 58, 237, 0.15);
+}
+
+.glass-coreum:hover::before {
+  left: 100%;
+}
+
+.glass-coreum:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* CoreumDash Text Gradient */
+.text-gradient-coreum {
+  background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 25%, #7c3aed 50%, #6d28d9 75%, #5b21b6 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  animation: colorShift 3s ease-in-out infinite;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* CoreumDash Glow Effects */
+.glow-green {
+  box-shadow: 0 0 20px rgba(37, 214, 149, 0.3);
+}
+
+.glow-red {
+  box-shadow: 0 0 20px rgba(216, 29, 60, 0.3);
+}
+
+/* CoreumDash Stat Card with full 3D effect - Dark Default, Light Override */
+.stat-card-coreum {
+  background: #101216; /* Dark by default */
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.light .stat-card-coreum {
+  background: hsl(var(--card));
+  border: 1.5px solid hsl(var(--border));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.stat-card-coreum::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(37, 214, 149, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.light .stat-card-coreum::before {
+  background: linear-gradient(135deg, rgba(37, 214, 149, 0.05), transparent);
+}
+
+.stat-card-coreum:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(37, 214, 149, 0.4);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(37, 214, 149, 0.2),
+    0 0 30px rgba(37, 214, 149, 0.3);
+}
+
+.light .stat-card-coreum:hover {
+  border-color: rgba(37, 214, 149, 0.5);
+  box-shadow: 
+    0 12px 24px rgba(37, 214, 149, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(37, 214, 149, 0.3),
+    0 0 30px rgba(37, 214, 149, 0.2);
+}
+
+.stat-card-coreum:hover::before {
+  opacity: 1;
+}
+
+/* CoreumDash Custom Scrollbar */
+.scrollbar-coreum::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-coreum::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+.scrollbar-coreum::-webkit-scrollbar-thumb {
+  background: #2d2d2d;
+  border-radius: 9999px;
+}
+
+.scrollbar-coreum::-webkit-scrollbar-thumb:hover {
+  background: #262626;
+}
+
+/* CoreumDash Header Style */
+.header-coreum {
+  background: rgba(16, 18, 22, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  border-bottom: 1px solid rgba(37, 214, 149, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* CoreumDash Input Styles - Light & Dark Theme Support */
+.input-coreum {
+  background: hsl(var(--card));
+  border: 1.5px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: hsl(var(--foreground));
+  transition: all 0.2s ease;
+}
+
+.dark .input-coreum {
+  background: #101216;
+  border: 1px solid #1b1d23;
+  color: white;
+}
+
+.input-coreum::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+.dark .input-coreum::placeholder {
+  color: #8892b0;
+}
+
+.input-coreum:focus {
+  outline: none;
+  border-color: #25d695;
+  box-shadow: 0 0 0 1px #25d695;
+}
+
+/* CoreumDash Badge Styles */
+.badge-coreum-green {
+  background: rgba(37, 214, 149, 0.1);
+  border: 1px solid rgba(37, 214, 149, 0.3);
+  color: #25d695;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.badge-coreum-red {
+  background: rgba(216, 29, 60, 0.1);
+  border: 1px solid rgba(216, 29, 60, 0.3);
+  color: #d81d3c;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* CoreumDash Animation Classes */
+.fade-in-coreum {
+  animation: fadeInCoreum 0.6s ease-out;
+}
+
+@keyframes fadeInCoreum {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pulse-coreum {
+  animation: pulseCoreum 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulseCoreum {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* CoreumDash Container */
+.container-coreum {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .container-coreum {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-coreum {
+    padding: 0 2rem;
+  }
+}
+
+/* CoreumDash Section Spacing */
+.section-coreum {
+  padding: 3rem 0;
+}
+
+@media (min-width: 768px) {
+  .section-coreum {
+    padding: 4rem 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-coreum {
+    padding: 5rem 0;
+  }
+}
+
+/* ===================================================
+   COREUMDASH STAT CARDS - EXACT MATCH - Light & Dark Theme Support
+   =================================================== */
+
+/* Base stat card matching CoreumDash screenshots */
+.stat-card-dash {
+  background: hsl(var(--card));
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1.5px solid hsl(var(--border));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: visible;
+  cursor: pointer;
+}
+
+.dark .stat-card-dash {
+  background: #101216;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card-dash:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(37, 214, 149, 0.5);
+  box-shadow: 
+    0 12px 24px rgba(37, 214, 149, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(37, 214, 149, 0.3),
+    0 0 30px rgba(37, 214, 149, 0.2);
+}
+
+.dark .stat-card-dash:hover {
+  border-color: rgba(37, 214, 149, 0.4);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(37, 214, 149, 0.2),
+    0 0 30px rgba(37, 214, 149, 0.3);
+}
+
+/* Stat card with ORANGE border (like Total Bonded) */
+.stat-card-dash-orange {
+  border: 2px solid rgba(255, 140, 66, 0.3);
+}
+
+.dark .stat-card-dash-orange {
+  border: 1px solid rgba(255, 140, 66, 0.2);
+}
+
+.stat-card-dash-orange:hover {
+  border-color: rgba(255, 140, 66, 0.6);
+  box-shadow: 
+    0 12px 24px rgba(255, 140, 66, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 140, 66, 0.4),
+    0 0 30px rgba(255, 140, 66, 0.2);
+}
+
+.dark .stat-card-dash-orange:hover {
+  border-color: rgba(255, 140, 66, 0.5);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 140, 66, 0.3),
+    0 0 40px rgba(255, 140, 66, 0.4),
+    inset 0 0 30px rgba(255, 140, 66, 0.05);
+}
+
+/* Stat card with CYAN border (like Total Supply) */
+.stat-card-dash-cyan {
+  border: 2px solid rgba(6, 182, 212, 0.3);
+}
+
+.dark .stat-card-dash-cyan {
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.stat-card-dash-cyan:hover {
+  border-color: rgba(6, 182, 212, 0.6);
+  box-shadow: 
+    0 12px 24px rgba(6, 182, 212, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(6, 182, 212, 0.4),
+    0 0 30px rgba(6, 182, 212, 0.2);
+}
+
+.dark .stat-card-dash-cyan:hover {
+  border-color: rgba(6, 182, 212, 0.5);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(6, 182, 212, 0.3),
+    0 0 40px rgba(6, 182, 212, 0.4),
+    inset 0 0 30px rgba(6, 182, 212, 0.05);
+}
+
+/* Stat card with PURPLE border (like Printed Today) */
+.stat-card-dash-purple {
+  border: 2px solid rgba(168, 85, 247, 0.3);
+}
+
+.dark .stat-card-dash-purple {
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.stat-card-dash-purple:hover {
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 
+    0 12px 24px rgba(168, 85, 247, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(168, 85, 247, 0.4),
+    0 0 30px rgba(168, 85, 247, 0.2);
+}
+
+.dark .stat-card-dash-purple:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(168, 85, 247, 0.3),
+    0 0 40px rgba(168, 85, 247, 0.4),
+    inset 0 0 30px rgba(168, 85, 247, 0.05);
+}
+
+/* Stat card with GREEN border */
+.stat-card-dash-green {
+  border: 2px solid rgba(37, 214, 149, 0.3);
+}
+
+.dark .stat-card-dash-green {
+  border: 1px solid rgba(37, 214, 149, 0.2);
+}
+
+.stat-card-dash-green:hover {
+  border-color: rgba(37, 214, 149, 0.6);
+  box-shadow: 
+    0 12px 24px rgba(37, 214, 149, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(37, 214, 149, 0.4),
+    0 0 30px rgba(37, 214, 149, 0.2);
+}
+
+.dark .stat-card-dash-green:hover {
+  border-color: rgba(37, 214, 149, 0.5);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(37, 214, 149, 0.3),
+    0 0 40px rgba(37, 214, 149, 0.4),
+    inset 0 0 30px rgba(37, 214, 149, 0.05);
+}
+
+/* Stat card with YELLOW border */
+.stat-card-dash-yellow {
+  border: 2px solid rgba(255, 187, 41, 0.3);
+}
+
+.dark .stat-card-dash-yellow {
+  border: 1px solid rgba(255, 187, 41, 0.2);
+}
+
+.stat-card-dash-yellow:hover {
+  border-color: rgba(255, 187, 41, 0.6);
+  box-shadow: 
+    0 12px 24px rgba(255, 187, 41, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 187, 41, 0.4),
+    0 0 30px rgba(255, 187, 41, 0.2);
+}
+
+.dark .stat-card-dash-yellow:hover {
+  border-color: rgba(255, 187, 41, 0.5);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 187, 41, 0.3),
+    0 0 40px rgba(255, 187, 41, 0.4),
+    inset 0 0 30px rgba(255, 187, 41, 0.05);
+}
+
+/* Stat card with RED/FIRE border (like Total Burned) */
+.stat-card-dash-red {
+  border: 2px solid rgba(255, 140, 66, 0.3);
+}
+
+.dark .stat-card-dash-red {
+  border: 1px solid rgba(255, 140, 66, 0.2);
+}
+
+.stat-card-dash-red:hover {
+  border-color: rgba(255, 69, 0, 0.6);
+  box-shadow: 
+    0 12px 24px rgba(255, 140, 66, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 69, 0, 0.4),
+    0 0 30px rgba(255, 140, 66, 0.2);
+}
+
+.dark .stat-card-dash-red:hover {
+  border-color: rgba(255, 69, 0, 0.5);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 69, 0, 0.3),
+    0 0 40px rgba(255, 140, 66, 0.4),
+    0 0 60px rgba(255, 215, 0, 0.2),
+    inset 0 0 30px rgba(255, 69, 0, 0.08);
+}
+
+/* Override neomorphic styles to match CoreumDash dark theme */
+.dark .neo-card {
+  background: linear-gradient(to bottom right, #101216, #1a1d24);
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.4), -8px -8px 16px rgba(40, 40, 40, 0.1);
+}
+
+.dark .neo-glass {
+  background: rgba(16, 18, 22, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Update icon glows to use CoreumDash green */
+.neo-icon-glow-purple {
+  background: linear-gradient(to bottom right, #25d695, #179b69);
+  box-shadow: 0 4px 18px rgba(37, 214, 149, 0.28);
+}
+
+html[data-color-scheme="green"] .neo-icon-glow-purple {
+  background: linear-gradient(to bottom right, #25d695, #179b69);
+  box-shadow: 0 4px 20px rgba(37, 214, 149, 0.4);
+}
+
+/* Chat Button Glow Animation */
+@keyframes chatButtonGlow {
+  0%, 100% {
+    box-shadow: 
+      0 4px 20px rgba(168,85,247,0.4),
+      0 2px 8px rgba(0,0,0,0.3),
+      inset 0 2px 4px rgba(255,255,255,0.3),
+      inset 0 -4px 12px rgba(0,0,0,0.4);
+  }
+  50% {
+    box-shadow: 
+      0 6px 30px rgba(168,85,247,0.6),
+      0 3px 12px rgba(0,0,0,0.3),
+      inset 0 2px 4px rgba(255,255,255,0.4),
+      inset 0 -4px 12px rgba(0,0,0,0.4);
+  }
+}
+
+@keyframes chatRingPulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Liquid Button Animations */
+@keyframes liquidRipple {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.3);
+  }
+}
+
+@keyframes liquidWave {
+  0%, 100% {
+    transform: translateY(0) scaleX(1);
+  }
+  50% {
+    transform: translateY(-2px) scaleX(1.05);
+  }
+}
+
+@keyframes liquidShimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Neomorphic 3D Button Depth Effect */
+@keyframes neoPress {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.25),
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      inset 0 1px 3px rgba(255, 255, 255, 0.2),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    transform: translateY(2px);
+    box-shadow: 
+      0 2px 6px rgba(0, 0, 0, 0.25),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      inset 0 2px 6px rgba(0, 0, 0, 0.3),
+      inset 0 -1px 2px rgba(255, 255, 255, 0.1);
+  }
 }
