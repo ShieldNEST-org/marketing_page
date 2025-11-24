@@ -600,61 +600,70 @@ export default function Home() {
           onClick={handleCloseModal}
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+          <div className="absolute inset-0 bg-black/85 backdrop-blur-md"></div>
           
-          {/* Modal Content */}
+          {/* Modal Content - Enhanced 3D Neomorphic */}
           <div 
-            className="relative bg-[#101216] border-2 border-[rgba(37,214,149,0.3)] rounded-2xl p-8 sm:p-12 max-w-2xl w-full mx-4 shadow-2xl"
+            className="relative neo-float-green p-8 sm:p-10 md:p-12 max-w-3xl w-full mx-4 shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_40px_rgba(37,214,149,0.2)]"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              boxShadow: `
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(37, 214, 149, 0.2),
+                inset 0 2px 8px rgba(37, 214, 149, 0.1),
+                inset 0 -2px 8px rgba(0, 0, 0, 0.3)
+              `
+            }}
           >
-            {/* Close Button */}
+            {/* Close Button - Neomorphic */}
             <button
               onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-2"
+              className="absolute top-6 right-6 text-gray-400 hover:text-white transition-all p-3 rounded-xl bg-[#0e0e0e] border border-gray-700 hover:border-[#25d695] hover:shadow-[0_0_15px_rgba(37,214,149,0.3)]"
               aria-label="Close modal"
             >
               <IoCloseOutline className="w-6 h-6" />
             </button>
 
             {/* Modal Header */}
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#25d695]/20 to-[#179b69]/20 border-2 border-[#25d695]/30 mb-6">
-                <IoShieldCheckmarkOutline className="w-10 h-10 text-[#25d695]" />
+            <div className="text-center mb-10">
+              {/* Enhanced 3D Icon Container */}
+              <div className="inline-flex items-center justify-center w-28 h-28 rounded-2xl neo-icon-glow-green mb-8 shadow-[0_0_30px_rgba(37,214,149,0.4)]">
+                <IoShieldCheckmarkOutline className="w-14 h-14 text-[#25d695] drop-shadow-[0_0_10px_rgba(37,214,149,0.6)]" />
               </div>
               
               <h2 
-                className="text-3xl sm:text-4xl font-bold text-white mb-4"
+                className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight"
                 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}
               >
                 Join the Beta Waitlist
               </h2>
               
-              <p className="text-lg text-gray-300 mb-2">
+              <p className="text-2xl sm:text-3xl text-gray-200 mb-4 font-semibold">
                 Accepting more beta users every day
               </p>
               
-              <p className="text-base text-gray-400 italic">
+              <p className="text-xl sm:text-2xl text-[#25d695] italic font-bold mb-6 drop-shadow-[0_0_10px_rgba(37,214,149,0.5)]">
                 Think you're secure enough? Think again.
               </p>
               
-              <p className="text-sm text-gray-500 mt-3 max-w-md mx-auto">
+              <p className="text-lg sm:text-xl text-gray-300 mt-6 max-w-2xl mx-auto leading-relaxed">
                 Your current security might not be enough. Join thousands who are taking their crypto security to the next level with ShieldNest.
               </p>
             </div>
 
             {/* Form */}
             {submitStatus === 'success' ? (
-              <div className="text-center py-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/20 border-2 border-green-500/30 mb-4">
-                  <IoCheckmarkCircleOutline className="w-10 h-10 text-green-400" />
+              <div className="text-center py-10">
+                <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-green-500/30 to-green-600/30 border-2 border-green-500/50 mb-6 shadow-[0_0_30px_rgba(34,197,94,0.4)]">
+                  <IoCheckmarkCircleOutline className="w-14 h-14 text-green-400" />
                 </div>
-                <p className="text-xl text-white font-semibold mb-2">You're on the list!</p>
-                <p className="text-gray-400">We'll notify you when beta access is available.</p>
+                <p className="text-3xl sm:text-4xl text-white font-bold mb-4">You're on the list!</p>
+                <p className="text-xl text-gray-300">We'll notify you when beta access is available.</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-8">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="email" className="block text-lg sm:text-xl font-semibold text-gray-200 mb-3">
                     Email Address
                   </label>
                   <input
@@ -664,23 +673,25 @@ export default function Home() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="your.email@example.com"
-                    className="w-full px-4 py-3 bg-[#0e0e0e] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#25d695] focus:ring-2 focus:ring-[#25d695]/20 transition-all"
+                    className="w-full px-6 py-4 text-lg bg-[#0e0e0e] border-2 border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#25d695] focus:ring-4 focus:ring-[#25d695]/20 transition-all shadow-[inset_0_2px_8px_rgba(0,0,0,0.3)]"
                     disabled={isSubmitting}
                   />
                   {errorMessage && (
-                    <p className="mt-2 text-sm text-red-400">{errorMessage}</p>
+                    <p className="mt-3 text-base text-red-400 font-medium">{errorMessage}</p>
                   )}
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full btn-coreum-green py-4 text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full btn-liquid py-5 text-xl sm:text-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed relative z-10"
                 >
-                  {isSubmitting ? 'Signing Up...' : 'Secure My Spot →'}
+                  <span className="relative z-10">
+                    {isSubmitting ? 'Signing Up...' : 'Secure My Spot →'}
+                  </span>
                 </button>
 
-                <p className="text-xs text-gray-500 text-center">
+                <p className="text-sm sm:text-base text-gray-400 text-center">
                   By signing up, you agree to receive beta access updates. We respect your privacy.
                 </p>
               </form>
