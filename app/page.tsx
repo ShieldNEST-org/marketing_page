@@ -638,7 +638,7 @@ export default function Home() {
                 Join the Beta Waitlist
               </h2>
               
-              <p className="text-2xl sm:text-3xl text-gray-200 mb-4 font-semibold">
+              <p className="text-2xl sm:text-3xl text-purple-200 mb-4 font-semibold">
                 Accepting more beta users every day
               </p>
               
