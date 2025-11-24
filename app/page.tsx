@@ -12,15 +12,71 @@ import {
   IoSpeedometerOutline,
   IoLockOpenOutline,
   IoCheckmarkCircleOutline,
-  IoGlobeOutline
+  IoGlobeOutline,
+  IoCloseOutline
 } from 'react-icons/io5';
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  const handleOpenModal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEmail('');
+    setSubmitStatus('idle');
+    setErrorMessage('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
+
+    try {
+      const response = await fetch('/api/beta-signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setSubmitStatus('error');
+        setErrorMessage(data.error || 'Something went wrong. Please try again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      setSubmitStatus('success');
+      setIsSubmitting(false);
+      
+      // Close modal after 2 seconds on success
+      setTimeout(() => {
+        handleCloseModal();
+      }, 2000);
+    } catch (error) {
+      setSubmitStatus('error');
+      setErrorMessage('Network error. Please check your connection and try again.');
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0e0e0e]">
@@ -86,12 +142,12 @@ export default function Home() {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-3">
-            <a 
-              href="https://app.shieldnest.org"
+            <button 
+              onClick={handleOpenModal}
               className="btn-coreum-green px-6 py-2 text-sm"
             >
               Launch App →
-            </a>
+            </button>
           </div>
         </div>
       </header>
@@ -143,12 +199,12 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-32">
-              <a 
-                href="https://app.shieldnest.org"
+              <button 
+                onClick={handleOpenModal}
                 className="btn-coreum-green px-10 py-5 text-lg sm:text-xl"
               >
                 Get Started Free
-              </a>
+              </button>
               
               <a 
                 href="#features"
@@ -431,8 +487,8 @@ export default function Home() {
                   ))}
                 </ul>
 
-                <a
-                  href="https://app.shieldnest.org"
+                <button
+                  onClick={handleOpenModal}
                   className={`block w-full py-3 text-center rounded-lg font-bold transition-all duration-300 ${
                     tier.popular
                       ? 'btn-coreum-green'
@@ -440,7 +496,7 @@ export default function Home() {
                   }`}
                 >
                   {tier.cta}
-                </a>
+                </button>
               </div>
             ))}
           </div>
@@ -457,12 +513,12 @@ export default function Home() {
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
               Join thousands of users managing their Coreum assets with ShieldNest
             </p>
-            <a
-              href="https://app.shieldnest.org"
+            <button
+              onClick={handleOpenModal}
               className="btn-coreum-green px-10 py-4 text-lg inline-block"
             >
               Launch App Now →
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -521,7 +577,7 @@ export default function Home() {
               <a href="#features" className="text-gray-400 hover:text-[#25d695] transition-colors">Features</a>
               <a href="#benefits" className="text-gray-400 hover:text-[#25d695] transition-colors">Benefits</a>
               <a href="#pricing" className="text-gray-400 hover:text-[#25d695] transition-colors">Pricing</a>
-              <a href="https://app.shieldnest.org" className="text-[#A855F7] hover:text-[#25d695] transition-colors font-semibold">Launch App</a>
+              <button onClick={handleOpenModal} className="text-[#A855F7] hover:text-[#25d695] transition-colors font-semibold">Launch App</button>
               
               {/* Multi-Chain Badge */}
               <div className="flex items-center px-3 py-1.5 bg-gradient-to-r from-[#25d695]/10 to-[#A855F7]/10 border border-[#25d695]/30 rounded-full ml-2">
@@ -536,6 +592,102 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Beta Signup Modal */}
+      {isModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          onClick={handleCloseModal}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+          
+          {/* Modal Content */}
+          <div 
+            className="relative bg-[#101216] border-2 border-[rgba(37,214,149,0.3)] rounded-2xl p-8 sm:p-12 max-w-2xl w-full mx-4 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-2"
+              aria-label="Close modal"
+            >
+              <IoCloseOutline className="w-6 h-6" />
+            </button>
+
+            {/* Modal Header */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#25d695]/20 to-[#179b69]/20 border-2 border-[#25d695]/30 mb-6">
+                <IoShieldCheckmarkOutline className="w-10 h-10 text-[#25d695]" />
+              </div>
+              
+              <h2 
+                className="text-3xl sm:text-4xl font-bold text-white mb-4"
+                style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}
+              >
+                Join the Beta Waitlist
+              </h2>
+              
+              <p className="text-lg text-gray-300 mb-2">
+                Accepting more beta users every day
+              </p>
+              
+              <p className="text-base text-gray-400 italic">
+                Think you're secure enough? Think again.
+              </p>
+              
+              <p className="text-sm text-gray-500 mt-3 max-w-md mx-auto">
+                Your current security might not be enough. Join thousands who are taking their crypto security to the next level with ShieldNest.
+              </p>
+            </div>
+
+            {/* Form */}
+            {submitStatus === 'success' ? (
+              <div className="text-center py-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/20 border-2 border-green-500/30 mb-4">
+                  <IoCheckmarkCircleOutline className="w-10 h-10 text-green-400" />
+                </div>
+                <p className="text-xl text-white font-semibold mb-2">You're on the list!</p>
+                <p className="text-gray-400">We'll notify you when beta access is available.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    placeholder="your.email@example.com"
+                    className="w-full px-4 py-3 bg-[#0e0e0e] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#25d695] focus:ring-2 focus:ring-[#25d695]/20 transition-all"
+                    disabled={isSubmitting}
+                  />
+                  {errorMessage && (
+                    <p className="mt-2 text-sm text-red-400">{errorMessage}</p>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full btn-coreum-green py-4 text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? 'Signing Up...' : 'Secure My Spot →'}
+                </button>
+
+                <p className="text-xs text-gray-500 text-center">
+                  By signing up, you agree to receive beta access updates. We respect your privacy.
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
