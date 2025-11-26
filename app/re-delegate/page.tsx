@@ -487,13 +487,10 @@ export default function ReDelegatePage() {
               </button>
 
               {/* Header */}
-              <div className="mb-6 relative z-10">
-                <h2 className="text-3xl font-bold mb-3 text-white bg-gradient-to-r from-purple-400 via-green-400 to-blue-400 bg-clip-text text-transparent">
+              <div className="mb-6 mt-8 relative z-10">
+                <h2 className="text-3xl font-bold text-white bg-gradient-to-r from-purple-400 via-green-400 to-blue-400 bg-clip-text text-transparent">
                   Re-delegate to ShieldNest
                 </h2>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  Choose your preferred wallet to connect
-                </p>
               </div>
 
             {/* Error Display with neomorphic styling */}
