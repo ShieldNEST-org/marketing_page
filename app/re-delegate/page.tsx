@@ -445,77 +445,56 @@ export default function ReDelegatePage() {
       {/* Re-delegate Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden"
+          className="fixed inset-0 z-50 overflow-y-auto"
           onClick={handleCloseModal}
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/85 backdrop-blur-md"></div>
+          <div className="fixed inset-0 bg-black/85 backdrop-blur-md" />
 
-          {/* Modal Content */}
-          <div
-            className="bg-[#0e0e0e] rounded-3xl max-w-md w-full relative max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              animation: 'scaleIn 0.3s ease-out',
-              boxShadow: '12px 12px 24px rgba(0, 0, 0, 0.6), -8px -8px 24px rgba(40, 40, 40, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(124, 58, 237, 0.2)'
-            }}
-          >
-            <div className="p-8">
-            {/* Animated gradient border effect */}
+          {/* Modal Container - centers modal vertically */}
+          <div className="flex min-h-full items-center justify-center p-4">
+            {/* Modal Content */}
             <div
-              className="absolute inset-0 rounded-3xl opacity-50 pointer-events-none"
+              className="relative bg-[#0e0e0e] rounded-3xl max-w-md w-full p-8 z-10"
+              onClick={(e) => e.stopPropagation()}
               style={{
-                background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(37, 214, 149, 0.1) 50%, rgba(77, 156, 255, 0.1) 100%)',
-                filter: 'blur(20px)'
+                animation: 'scaleIn 0.3s ease-out',
+                boxShadow: '12px 12px 24px rgba(0, 0, 0, 0.6), -8px -8px 24px rgba(40, 40, 40, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(124, 58, 237, 0.2)'
               }}
-            />
-
-            {/* Close Button with neomorphic styling */}
-            <button
-              onClick={handleCloseModal}
-              disabled={connecting}
-              type="button"
-              className="absolute top-4 right-4 p-2 rounded-xl bg-[#1a1f2e] border border-gray-800/50
-                hover:border-purple-500/30 hover:bg-[#22283a] transition-all duration-300
-                shadow-[0_2px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.05)]
-                hover:shadow-[0_4px_12px_rgba(124,58,237,0.2),inset_0_1px_2px_rgba(255,255,255,0.1)]
-                disabled:opacity-50 disabled:cursor-not-allowed z-10"
             >
-              <IoCloseOutline className="w-5 h-5 text-gray-400 hover:text-white transition-colors" />
-            </button>
+              {/* Animated gradient border effect */}
+              <div
+                className="absolute inset-0 rounded-3xl opacity-50 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(37, 214, 149, 0.1) 50%, rgba(77, 156, 255, 0.1) 100%)',
+                  filter: 'blur(20px)'
+                }}
+              />
 
-            {/* Header */}
-            <div className="mb-6 relative z-10">
-              <h2 className="text-3xl font-bold mb-3 text-white bg-gradient-to-r from-purple-400 via-green-400 to-blue-400 bg-clip-text text-transparent">
-                Re-delegate to ShieldNest
-              </h2>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Choose your preferred wallet to connect
-              </p>
-              {!isConnected && (
-                <div
-                  className="mt-4 p-4 rounded-2xl relative overflow-hidden"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(37, 214, 149, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%)',
-                    border: '1px solid rgba(37, 214, 149, 0.2)',
-                    boxShadow: '0_4px_12px_rgba(37,214,149,0.1),inset_0_1px_2px_rgba(255,255,255,0.05)'
-                  }}
-                >
-                  <p className="text-green-300 text-xs leading-relaxed relative z-10">
-                    <strong className="text-green-200">Easy Setup:</strong> Connect your wallet instantly to view your portfolio.
-                    No sign-up required! You can optionally create an account later to save your wallets permanently.
-                  </p>
-                  <div
-                    className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-20"
-                    style={{
-                      background: 'radial-gradient(circle, rgba(37, 214, 149, 0.4), transparent)'
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+              {/* Close Button with neomorphic styling */}
+              <button
+                onClick={handleCloseModal}
+                disabled={connecting}
+                type="button"
+                className="absolute top-4 right-4 p-2 rounded-xl bg-[#1a1f2e] border border-gray-800/50
+                  hover:border-purple-500/30 hover:bg-[#22283a] transition-all duration-300
+                  shadow-[0_2px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.05)]
+                  hover:shadow-[0_4px_12px_rgba(124,58,237,0.2),inset_0_1px_2px_rgba(255,255,255,0.1)]
+                  disabled:opacity-50 disabled:cursor-not-allowed z-10"
+              >
+                <IoCloseOutline className="w-5 h-5 text-gray-400 hover:text-white transition-colors" />
+              </button>
+
+              {/* Header */}
+              <div className="mb-6 relative z-10">
+                <h2 className="text-3xl font-bold mb-3 text-white bg-gradient-to-r from-purple-400 via-green-400 to-blue-400 bg-clip-text text-transparent">
+                  Re-delegate to ShieldNest
+                </h2>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  Choose your preferred wallet to connect
+                </p>
+              </div>
 
             {/* Error Display with neomorphic styling */}
             {error && (
@@ -781,7 +760,7 @@ export default function ReDelegatePage() {
                 />
               </div>
             </div>
-            </div>
+          </div>
           </div>
         </div>
       )}
