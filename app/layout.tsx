@@ -14,6 +14,11 @@ export const metadata: Metadata = {
   description: "Track, analyze, and protect your digital assets with enterprise-grade security and real-time insights. Built for the Coreum blockchain.",
   keywords: ["crypto", "portfolio", "coreum", "blockchain", "security", "NFT", "DeFi"],
   authors: [{ name: "ShieldNest" }],
+  icons: {
+    icon: "/shld_dark.svg",
+    shortcut: "/shld_dark.svg",
+    apple: "/shld_dark.svg",
+  },
   openGraph: {
     title: "ShieldNest - Secure Your Crypto Portfolio",
     description: "Track, analyze, and protect your digital assets on Coreum blockchain",
