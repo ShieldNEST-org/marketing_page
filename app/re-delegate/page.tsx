@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -109,6 +109,20 @@ export default function ReDelegatePage() {
 
   // Simplified wallet connection
   const { address, connecting, provider, isConnected, connectWallet, disconnect } = useRedelegateWallet();
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isModalOpen]);
 
   const handleOpenModal = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -431,15 +445,16 @@ export default function ReDelegatePage() {
       {/* Re-delegate Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden"
           onClick={handleCloseModal}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
         >
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/85 backdrop-blur-md"></div>
 
           {/* Modal Content */}
           <div
-            className="bg-[#0e0e0e] rounded-3xl max-w-md w-full p-8 relative my-auto overflow-hidden"
+            className="bg-[#0e0e0e] rounded-3xl max-w-md w-full relative max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
             style={{
               animation: 'scaleIn 0.3s ease-out',
@@ -447,6 +462,7 @@ export default function ReDelegatePage() {
               border: '1px solid rgba(124, 58, 237, 0.2)'
             }}
           >
+            <div className="p-8">
             {/* Animated gradient border effect */}
             <div
               className="absolute inset-0 rounded-3xl opacity-50 pointer-events-none"
@@ -455,6 +471,7 @@ export default function ReDelegatePage() {
                 filter: 'blur(20px)'
               }}
             />
+
             {/* Close Button with neomorphic styling */}
             <button
               onClick={handleCloseModal}
@@ -763,6 +780,7 @@ export default function ReDelegatePage() {
                   }}
                 />
               </div>
+            </div>
             </div>
           </div>
         </div>
