@@ -105,6 +105,7 @@ function useRedelegateWallet() {
 export default function ReDelegatePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRedelegating, setIsRedelegating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Simplified wallet connection
   const { address, connecting, provider, isConnected, connectWallet, disconnect } = useRedelegateWallet();
@@ -116,14 +117,17 @@ export default function ReDelegatePage() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setError(null); // Clear any errors when closing modal
   };
 
   // Wallet connection handler - opens wallet selection modal
   const handleConnectWallet = async (walletType: 'keplr' | 'leap' | 'cosmostation') => {
+    setError(null);
     try {
       await connectWallet(walletType);
     } catch (error) {
       console.error('Wallet connection failed:', error);
+      setError(error instanceof Error ? error.message : 'Connection failed');
     }
   };
 
