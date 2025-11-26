@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { 
   IoWalletOutline, 
   IoPieChartOutline, 
@@ -13,7 +14,9 @@ import {
   IoLockOpenOutline,
   IoCheckmarkCircleOutline,
   IoGlobeOutline,
-  IoCloseOutline
+  IoCloseOutline,
+  IoServerOutline,
+  IoHardwareChipOutline
 } from 'react-icons/io5';
 
 export default function Home() {
@@ -137,12 +140,20 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-6 text-gray-300">
             <a href="#features" className="hover:text-[#25d695] transition-colors">Features</a>
             <a href="#benefits" className="hover:text-[#25d695] transition-colors">Benefits</a>
+            <a href="#validator" className="hover:text-[#25d695] transition-colors">Validator</a>
             <a href="#pricing" className="hover:text-[#25d695] transition-colors">Pricing</a>
           </nav>
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-3">
-            <button 
+            <Link
+              href="/re-delegate"
+              className="btn-redelegate px-4 py-2 text-sm flex items-center gap-2"
+            >
+              <span className="hidden sm:inline">Re-delegate</span>
+            </Link>
+
+            <button
               onClick={handleOpenModal}
               className="btn-coreum-green px-6 py-2 text-sm"
             >
@@ -408,6 +419,95 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Validator Section */}
+      <section id="validator" className="py-20 px-6 bg-[#101216]">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
+              Enterprise-Grade <span className="text-[#25d695]">Validator Infrastructure</span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              We are a strong source of validation, powered by hardened infrastructure and military-grade security
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* Infrastructure Card */}
+            <div className="neo-float-green p-8 shadow-[0_0_30px_rgba(37,214,149,0.2)]">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 flex items-center justify-center mb-6 shadow-[0_0_10px_rgba(37,214,149,0.15)]">
+                <IoServerOutline className="w-8 h-8 text-green-400 drop-shadow-[0_0_8px_rgba(37,214,149,0.6)]" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">Hardened Bare-Metal Servers</h3>
+              <p className="text-gray-300 mb-6">
+                Our new validator runs on enterprise-grade bare-metal servers with exceptional performance:
+              </p>
+              <ul className="space-y-3">
+                <li className="flex items-start text-gray-300">
+                  <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
+                  <span><strong className="text-white">12 cores</strong> @ 3.7GHz for maximum processing power</span>
+                </li>
+                <li className="flex items-start text-gray-300">
+                  <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
+                  <span><strong className="text-white">96GB RAM</strong> for high-throughput operations</span>
+                </li>
+                <li className="flex items-start text-gray-300">
+                  <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
+                  <span><strong className="text-white">Dual NVMe</strong> storage for ultra-fast I/O</span>
+                </li>
+                <li className="flex items-start text-gray-300">
+                  <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
+                  <span><strong className="text-white">3Gbps NIC</strong> for low-latency network connectivity</span>
+                </li>
+                <li className="flex items-start text-gray-300">
+                  <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
+                  <span><strong className="text-white">Geographically distributed</strong> servers in different areas for better decentralization</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Security Card */}
+            <div className="neo-float-purple p-8 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 flex items-center justify-center mb-6 shadow-[0_0_10px_rgba(168,85,247,0.15)]">
+                <IoShieldCheckmarkOutline className="w-8 h-8 text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">Military-Grade Security</h3>
+              <p className="text-gray-300 mb-6">
+                Your staking rewards are protected by enterprise-level security measures:
+              </p>
+              <ul className="space-y-3">
+                <li className="flex items-start text-gray-300">
+                  <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
+                  <span><strong className="text-white">Multiple sentry nodes</strong> protecting validator from DDoS attacks</span>
+                </li>
+                <li className="flex items-start text-gray-300">
+                  <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
+                  <span><strong className="text-white">3-of-5 multisig</strong> wallet protection using air-gapped devices</span>
+                </li>
+                <li className="flex items-start text-gray-300">
+                  <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
+                  <span><strong className="text-white">Multiple backups</strong> in place for maximum redundancy</span>
+                </li>
+                <li className="flex items-start text-gray-300">
+                  <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
+                  <span><strong className="text-white">24/7 monitoring</strong> and automated failover systems</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* CTA Button */}
+          <div className="text-center">
+            <button
+              onClick={handleOpenModal}
+              className="btn-coreum-green px-12 py-5 text-lg sm:text-xl inline-flex items-center gap-3"
+            >
+              <IoHardwareChipOutline className="w-6 h-6" />
+              Connect and Earn
+            </button>
           </div>
         </div>
       </section>
