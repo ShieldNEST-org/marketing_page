@@ -1,4 +1,28 @@
 {
-  "crons": []
+  "crons": [],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "coreumstaking.com"
+        }
+      ],
+      "destination": "https://www.shieldnest.org/re-delegate",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.coreumstaking.com"
+        }
+      ],
+      "destination": "https://www.shieldnest.org/re-delegate",
+      "permanent": true
+    }
+  ]
 }
 
