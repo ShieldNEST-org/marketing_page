@@ -153,12 +153,14 @@ export default function Home() {
               <span className="hidden sm:inline">Re-delegate</span>
             </Link>
 
-            <button
-              onClick={handleOpenModal}
-              className="btn-coreum-green px-6 py-2 text-sm"
+            <a
+              href="https://v1.shieldnest.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-coreum-green px-6 py-2 text-sm inline-block"
             >
               Launch App →
-            </button>
+            </a>
           </div>
         </div>
       </header>
@@ -210,12 +212,14 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-32">
-              <button 
-                onClick={handleOpenModal}
-                className="btn-coreum-green px-10 py-5 text-lg sm:text-xl"
+              <a 
+                href="https://v1.shieldnest.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-coreum-green px-10 py-5 text-lg sm:text-xl inline-block"
               >
                 Get Started Free
-              </button>
+              </a>
               
               <a 
                 href="#features"
@@ -501,13 +505,15 @@ export default function Home() {
 
           {/* CTA Button */}
           <div className="text-center">
-            <button
-              onClick={handleOpenModal}
+            <a
+              href="https://v1.shieldnest.org"
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-coreum-green px-12 py-5 text-lg sm:text-xl inline-flex items-center gap-3"
             >
               <IoHardwareChipOutline className="w-6 h-6" />
               Connect and Earn
-            </button>
+            </a>
           </div>
         </div>
       </section>
@@ -587,8 +593,10 @@ export default function Home() {
                   ))}
                 </ul>
 
-                <button
-                  onClick={handleOpenModal}
+                <a
+                  href="https://v1.shieldnest.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`block w-full py-3 text-center rounded-lg font-bold transition-all duration-300 ${
                     tier.popular
                       ? 'btn-coreum-green'
@@ -596,7 +604,7 @@ export default function Home() {
                   }`}
                 >
                   {tier.cta}
-                </button>
+                </a>
               </div>
             ))}
           </div>
@@ -613,12 +621,14 @@ export default function Home() {
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
               Join thousands of users managing their Coreum assets with ShieldNest
             </p>
-            <button
-              onClick={handleOpenModal}
+            <a
+              href="https://v1.shieldnest.org"
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-coreum-green px-10 py-4 text-lg inline-block"
             >
               Launch App Now →
-            </button>
+            </a>
           </div>
         </div>
       </section>
@@ -677,7 +687,7 @@ export default function Home() {
               <a href="#features" className="text-gray-400 hover:text-[#25d695] transition-colors">Features</a>
               <a href="#benefits" className="text-gray-400 hover:text-[#25d695] transition-colors">Benefits</a>
               <a href="#pricing" className="text-gray-400 hover:text-[#25d695] transition-colors">Pricing</a>
-              <button onClick={handleOpenModal} className="text-[#A855F7] hover:text-[#25d695] transition-colors font-semibold">Launch App</button>
+              <a href="https://v1.shieldnest.org" target="_blank" rel="noopener noreferrer" className="text-[#A855F7] hover:text-[#25d695] transition-colors font-semibold">Launch App</a>
               
               {/* Multi-Chain Badge */}
               <div className="flex items-center px-3 py-1.5 bg-gradient-to-r from-[#25d695]/10 to-[#A855F7]/10 border border-[#25d695]/30 rounded-full ml-2">
