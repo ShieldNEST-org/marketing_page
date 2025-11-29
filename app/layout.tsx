@@ -15,9 +15,9 @@ export const metadata: Metadata = {
   keywords: ["crypto", "portfolio", "coreum", "blockchain", "security", "NFT", "DeFi"],
   authors: [{ name: "ShieldNest" }],
   icons: {
-    icon: "/shld_dark.svg",
-    shortcut: "/shld_dark.svg",
-    apple: "/shld_dark.svg",
+    icon: "/shieldmarkteingfavicon.svg",
+    shortcut: "/shieldmarkteingfavicon.svg",
+    apple: "/shieldmarkteingfavicon.svg",
   },
   openGraph: {
     title: "ShieldNest - Secure Your Crypto Portfolio",

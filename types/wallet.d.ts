@@ -42,3 +42,4 @@ interface Window {
     signArbitrary: (chainId: string, signer: string, data: string | Uint8Array) => Promise<any>;
   };
 }
+
