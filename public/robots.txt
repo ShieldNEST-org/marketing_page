@@ -1,0 +1,44 @@
+# ShieldNest Robots.txt
+# https://shieldnest.org
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://shieldnest.org/sitemap.xml
+
+# Crawl-delay for considerate crawling
+Crawl-delay: 1
+
+# Specific search engine bots
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# Block specific paths if needed
+# Disallow: /api/
+# Disallow: /private/
+
+# Host directive
+Host: https://shieldnest.org
+
