@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'www.shieldnest.org',
+      },
+      {
+        protocol: 'https',
         hostname: 'v1.shieldnest.org',
       },
     ],
@@ -57,7 +61,7 @@ const nextConfig: NextConfig = {
       },
       // Cache static assets
       {
-        source: '/(.*).(ico|png|jpg|jpeg|gif|webp|svg|woff|woff2)',
+        source: '/(.*).(ico|png|jpg|jpeg|gif|webp|svg|woff|woff2|xml|txt|json)',
         headers: [
           {
             key: 'Cache-Control',
@@ -78,22 +82,7 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Redirect www to non-www for SEO
-  async redirects() {
-    return [
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'www.shieldnest.org',
-          },
-        ],
-        destination: 'https://shieldnest.org/:path*',
-        permanent: true,
-      },
-    ];
-  },
+  // No redirects here - let Vercel handle www/non-www at DNS level
 };
 
 export default nextConfig;
