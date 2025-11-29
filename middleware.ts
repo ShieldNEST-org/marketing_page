@@ -4,13 +4,13 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   
-  // Redirect from coreumstaking.com to re-delegate page
+  // Redirect from coreumstaking.com to re-delegate page (non-www)
   if (
     hostname.includes('coreumstaking.com') ||
     hostname.includes('coreum-staking.com')
   ) {
     return NextResponse.redirect(
-      new URL('/re-delegate', 'https://www.shieldnest.org'),
+      new URL('/re-delegate', 'https://shieldnest.org'),
       301 // Permanent redirect
     );
   }
@@ -25,10 +25,8 @@ export const config = {
      * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * - favicon.ico, sitemap.xml, robots.txt (static files)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|manifest.json|.*\\.svg|.*\\.png|.*\\.jpg|.*\\.ico).*)',
   ],
 };
-
-

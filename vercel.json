@@ -9,7 +9,7 @@
           "value": "coreumstaking.com"
         }
       ],
-      "destination": "https://www.shieldnest.org/re-delegate",
+      "destination": "https://shieldnest.org/re-delegate",
       "permanent": true
     },
     {
@@ -20,9 +20,8 @@
           "value": "www.coreumstaking.com"
         }
       ],
-      "destination": "https://www.shieldnest.org/re-delegate",
+      "destination": "https://shieldnest.org/re-delegate",
       "permanent": true
     }
   ]
 }
-

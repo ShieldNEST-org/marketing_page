@@ -134,12 +134,10 @@ export const metadata: Metadata = {
     },
   },
 
-  // Verification Tags (Add your IDs here)
-  verification: {
-    google: "YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_ID", // Replace with actual ID
-    // yandex: "YOUR_YANDEX_ID",
-    // bing: "YOUR_BING_ID",
-  },
+  // Verification Tags - Already verified via Google Search Console
+  // verification: {
+  //   google: "YOUR_VERIFICATION_ID",
+  // },
 
   // Additional Meta
   alternates: {
