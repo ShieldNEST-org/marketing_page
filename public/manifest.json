@@ -58,7 +58,7 @@
       "name": "Re-delegate",
       "short_name": "Delegate",
       "description": "Re-delegate your CORE tokens",
-      "url": "https://v1.shieldnest.org",
+      "url": "https://v1.shieldnest.org/dashboard?action=redelegate",
       "icons": [
         {
           "src": "/shieldmarketingfavicon.svg",

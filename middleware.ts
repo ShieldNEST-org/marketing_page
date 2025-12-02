@@ -4,13 +4,13 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   
-  // Redirect from coreumstaking.com to v1.shieldnest.org
+  // Redirect from coreumstaking.com to v1.shieldnest.org re-delegate
   if (
     hostname.includes('coreumstaking.com') ||
     hostname.includes('coreum-staking.com')
   ) {
     return NextResponse.redirect(
-      new URL('https://v1.shieldnest.org'),
+      new URL('https://v1.shieldnest.org/dashboard?action=redelegate'),
       301 // Permanent redirect
     );
   }
