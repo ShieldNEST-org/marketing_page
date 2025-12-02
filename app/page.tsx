@@ -146,12 +146,14 @@ export default function Home() {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/re-delegate"
+            <a
+              href="https://v1.shieldnest.org"
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-redelegate px-4 py-2 text-sm flex items-center gap-2"
             >
               <span className="hidden sm:inline">Re-delegate</span>
-            </Link>
+            </a>
 
             <a
               href="https://v1.shieldnest.org"
