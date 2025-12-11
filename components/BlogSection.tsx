@@ -13,6 +13,7 @@ interface BlogPost {
   readingTime: number;
   publishedAt: string;
   author: string;
+  imageUrl?: string;
   optimized?: boolean;
 }
 
@@ -227,15 +228,28 @@ export default function BlogSection() {
               itemScope
               itemType="https://schema.org/BlogPosting"
             >
-              {/* Optimized Image Placeholder */}
+              {/* Blog Post Image */}
               <div className="relative h-32 sm:h-40 lg:h-48 mb-4 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#25d695]/10 to-purple-500/10"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#25d695]/20 to-purple-500/20 border border-[#25d695]/30 flex items-center justify-center">
-                    <IoPersonOutline className="w-8 h-8 text-[#25d695]" />
-                  </div>
-                </div>
-                {/* Performance hint for future image loading */}
+                {post.imageUrl ? (
+                  <Image
+                    src={post.imageUrl}
+                    alt={post.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    unoptimized
+                  />
+                ) : (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#25d695]/10 to-purple-500/10"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#25d695]/20 to-purple-500/20 border border-[#25d695]/30 flex items-center justify-center">
+                        <IoPersonOutline className="w-8 h-8 text-[#25d695]" />
+                      </div>
+                    </div>
+                  </>
+                )}
+                {/* Reading time badge */}
                 <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
                   {post.readingTime} min read
                 </div>
