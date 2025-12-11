@@ -367,8 +367,10 @@ export default function BlogSection() {
             
             return (
               <>
-                {visibleDates.map((dateKey) => {
+                {visibleDates.map((dateKey, dayIndex) => {
                   const dayPosts = grouped.get(dateKey) || [];
+                  // First day's first 3 images should load eagerly for LCP
+                  const isFirstDay = dayIndex === 0;
                   return (
                     <div key={dateKey} className="relative">
                       {/* Day Header */}
@@ -412,7 +414,7 @@ export default function BlogSection() {
                           WebkitOverflowScrolling: 'touch'
                         }}
                       >
-                        {dayPosts.map((post) => (
+                        {dayPosts.map((post, postIndex) => (
                           <article
                             key={post.id}
                             className="group neo-float-purple p-4 cursor-pointer transition-all duration-300 hover:scale-[1.02] flex-shrink-0 w-[280px] sm:w-[300px] snap-start"
@@ -439,6 +441,8 @@ export default function BlogSection() {
                                   className="object-cover"
                                   sizes="300px"
                                   unoptimized
+                                  priority={isFirstDay && postIndex < 3}
+                                  loading={isFirstDay && postIndex < 3 ? 'eager' : 'lazy'}
                                 />
                               ) : (
                                 <>
