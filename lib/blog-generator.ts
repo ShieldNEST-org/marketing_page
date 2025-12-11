@@ -1,4 +1,11 @@
 import { saveBlogPost } from './supabase';
+import { 
+  generatePromptContext, 
+  selectWeightedCategory, 
+  getRandomTopic,
+  BRAND_VOICE,
+  SEO_KEYWORDS 
+} from './content-strategy';
 
 interface BlogPostData {
   title: string;
@@ -11,57 +18,6 @@ interface BlogPostData {
   author: string;
   imageUrl?: string;
 }
-
-// Expanded topics for crypto/blockchain content
-const BLOG_TOPICS = [
-  // Coreum specific
-  'Coreum blockchain security',
-  'Coreum smart contracts',
-  'Coreum DeFi protocols',
-  'Coreum NFT marketplace',
-  'Coreum governance',
-  'Coreum staking rewards',
-
-  // Cosmos ecosystem
-  'Cosmos Hub updates',
-  'IBC protocol security',
-  'Cosmos SDK development',
-  'Interchain security',
-  'Cosmos airdrops',
-  'Cosmos validator operations',
-
-  // Airdrops and incentives
-  'Crypto airdrop strategies',
-  'DeFi airdrop hunting',
-  'Layer 2 airdrops',
-  'NFT project airdrops',
-  'Blockchain testnet rewards',
-  'Community airdrop participation',
-
-  // Security topics
-  'Wallet security best practices',
-  'Smart contract auditing',
-  'DeFi security risks',
-  'NFT security threats',
-  'Cross-chain bridge security',
-  'Crypto scam prevention',
-
-  // Trending topics
-  'Layer 2 scaling solutions',
-  'Web3 gaming security',
-  'DAO security frameworks',
-  'Cryptocurrency regulation updates',
-  'Zero-knowledge proofs',
-  'Blockchain interoperability',
-
-  // Technical deep dives
-  'Consensus mechanism analysis',
-  'Token economics design',
-  'Blockchain oracle security',
-  'Decentralized identity solutions',
-  'Privacy-preserving technologies',
-  'Sustainable blockchain mining'
-];
 
 class BlogGenerator {
   private apiKey?: string;
@@ -170,30 +126,45 @@ class BlogGenerator {
 
   async generateBlogPosts(count: number = 10): Promise<BlogPostData[]> {
     const posts: BlogPostData[] = [];
-    const selectedTopics = BLOG_TOPICS.sort(() => 0.5 - Math.random()).slice(0, count);
 
-    for (const topic of selectedTopics) {
+    for (let i = 0; i < count; i++) {
       try {
-        console.log(`Generating blog post for topic: ${topic}`);
+        // Get dynamic content context from strategy
+        const category = selectWeightedCategory();
+        const topic = getRandomTopic(category);
+        const contentContext = generatePromptContext();
 
-        const prompt = `You are a crypto security expert writing for SHIELDNEST, a Coreum blockchain security platform.
+        console.log(`Generating blog post [${i + 1}/${count}] - Category: ${category.name}`);
+        console.log(`Topic: ${topic}`);
 
-Generate ONE high-quality, SEO-optimized blog post about: "${topic}".
+        const prompt = `You are a crypto thought leader and content strategist writing for SHIELDNEST, a portfolio management and security platform built on the Coreum blockchain.
+
+${contentContext}
+
+TASK: Write an engaging, viral-worthy blog post that:
+1. Hooks readers with the trending topic
+2. Provides genuine value and insights
+3. Naturally weaves in Coreum/SHIELDNEST benefits (don't force it)
+4. Ends with a subtle call-to-action
 
 Requirements:
-- Title: Compelling and SEO-friendly (max 70 characters)
-- Excerpt: 1-2 sentences, engaging summary (max 160 characters)
-- Content: 200-400 words, informative, practical advice, include SHIELDNEST benefits
-- Keywords: 3-5 relevant SEO keywords
+- Title: Clickable, SEO-friendly, creates curiosity (max 70 characters)
+- Excerpt: Hook that makes readers want to click (max 160 characters)
+- Content: 300-500 words, conversational tone, include data/stats when relevant
+- Keywords: 4-6 relevant SEO keywords
 - Reading time: Estimate based on content length
 - Author: "Shield Nest Team"
+
+IMPORTANT: This is NOT just a security blog. Cover hot crypto topics that bring in traffic from 
+Ethereum, Solana, Bitcoin, and SUI communities. Be friendly to other chains while showing why 
+Coreum is worth exploring.
 
 Return as valid JSON with this exact structure:
 {
   "title": "Blog Post Title",
   "excerpt": "Brief description...",
-  "content": "Full blog content...",
-  "keywords": ["keyword1", "keyword2", "keyword3"],
+  "content": "Full blog content with paragraphs separated by newlines...",
+  "keywords": ["keyword1", "keyword2", "keyword3", "keyword4"],
   "readingTime": 3
 }`;
 
@@ -236,7 +207,7 @@ Return as valid JSON with this exact structure:
         await new Promise(resolve => setTimeout(resolve, 3000));
 
       } catch (error) {
-        console.error(`Error generating post for topic "${topic}":`, error);
+        console.error(`Error generating post [${i + 1}/${count}]:`, error);
         continue;
       }
     }
