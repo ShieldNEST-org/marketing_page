@@ -315,7 +315,7 @@ export default function BlogSection() {
           <div className="neo-float-purple p-8 max-w-md mx-auto">
             <p className="text-gray-300 mb-4">Unable to load blog posts at this time.</p>
             <button
-              onClick={() => fetchBlogPosts('today')}
+              onClick={() => fetchBlogPosts()}
               className="btn-coreum-green px-6 py-3"
               aria-label="Retry loading blog posts"
             >
