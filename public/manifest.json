@@ -40,32 +40,6 @@
     }
   ],
   "related_applications": [],
-  "prefer_related_applications": false,
-  "shortcuts": [
-    {
-      "name": "Launch App",
-      "short_name": "App",
-      "description": "Open SHIELDNEST Application",
-      "url": "https://v1.shieldnest.org",
-      "icons": [
-        {
-          "src": "/favicon.svg",
-          "sizes": "any"
-        }
-      ]
-    },
-    {
-      "name": "Re-delegate",
-      "short_name": "Delegate",
-      "description": "Re-delegate your CORE tokens",
-      "url": "https://v1.shieldnest.org/dashboard?action=redelegate",
-      "icons": [
-        {
-          "src": "/favicon.svg",
-          "sizes": "any"
-        }
-      ]
-    }
-  ]
+  "prefer_related_applications": false
 }
 

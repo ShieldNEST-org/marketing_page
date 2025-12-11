@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { IoTimeOutline, IoPersonOutline, IoArrowForward, IoChevronForward } from 'react-icons/io5';
 
@@ -38,12 +38,20 @@ export default function BlogSection() {
   const [hasMore, setHasMore] = useState(true);
   const [historyOffset, setHistoryOffset] = useState(0);
   const [showLoadMore, setShowLoadMore] = useState(false);
+  
+  // Track if initial fetch has been done to prevent refetch
+  const hasFetched = useRef(false);
+  // Track component mount state to prevent state updates after unmount
+  const isMounted = useRef(true);
 
   // Lighthouse-optimized data fetching with error boundaries
   const fetchBlogPosts = useCallback(async (type: 'today' | 'history' = 'today', offset: number = 0) => {
     try {
       if (type === 'today') {
-        setLoading(true);
+        // Only show loading if we don't have posts yet (prevents flash)
+        if (posts.length === 0) {
+          setLoading(true);
+        }
         setError(null);
       } else {
         setLoadingMore(true);
@@ -55,13 +63,19 @@ export default function BlogSection() {
         ...(type === 'history' && { offset: offset.toString() })
       });
 
-      const response = await fetch(`/api/blog?${params}`);
+      const response = await fetch(`/api/blog?${params}`, {
+        // Use cache for initial load, no-store for explicit refreshes
+        cache: type === 'today' ? 'default' : 'no-store',
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data: BlogResponse = await response.json();
+
+      // Only update state if component is still mounted
+      if (!isMounted.current) return;
 
       if (type === 'today') {
         // Performance optimization: Preload critical content
@@ -87,13 +101,19 @@ export default function BlogSection() {
       }
 
     } catch (err) {
+      // Only update state if component is still mounted
+      if (!isMounted.current) return;
+      
       setError(err instanceof Error ? err.message : 'Failed to load blog posts');
       console.error('Blog loading error:', err);
     } finally {
-      setLoading(false);
-      setLoadingMore(false);
+      // Only update state if component is still mounted
+      if (isMounted.current) {
+        setLoading(false);
+        setLoadingMore(false);
+      }
     }
-  }, []);
+  }, [posts.length]);
 
   // Load more historical posts
   const loadMorePosts = useCallback(() => {
@@ -103,7 +123,19 @@ export default function BlogSection() {
   }, [fetchBlogPosts, loadingMore, hasMore, historyOffset]);
 
   useEffect(() => {
-    fetchBlogPosts();
+    // Set mounted ref
+    isMounted.current = true;
+    
+    // Only fetch once on initial mount
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchBlogPosts();
+    }
+    
+    // Cleanup function
+    return () => {
+      isMounted.current = false;
+    };
   }, [fetchBlogPosts]);
 
   // Performance optimization: Lazy load post content

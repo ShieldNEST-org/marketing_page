@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getTodaysPosts, getPostsPaginated, getPostById } from '@/lib/supabase';
 
+// Revalidate every 5 minutes
+export const revalidate = 300;
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -45,7 +48,8 @@ export async function GET(request: NextRequest) {
       optimized: true
     }));
 
-    return NextResponse.json({
+    // Add cache headers for CDN and browser caching
+    const response = NextResponse.json({
       posts: transformedPosts,
       meta: {
         total: transformedPosts.length,
@@ -56,10 +60,18 @@ export async function GET(request: NextRequest) {
       }
     });
 
+    // Cache for 5 minutes on CDN, stale-while-revalidate for 1 hour
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=300, stale-while-revalidate=3600'
+    );
+
+    return response;
+
   } catch (error) {
     console.error('Blog API error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch blog content' },
+      { error: 'Failed to fetch blog content', posts: [], meta: { total: 0, generatedAt: new Date().toISOString() } },
       { status: 500 }
     );
   }
