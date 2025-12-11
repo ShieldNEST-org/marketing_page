@@ -44,7 +44,7 @@ class BlogGenerator {
           'Authorization': `Bearer ${this.apiKey}`,
         },
         body: JSON.stringify({
-          model: 'grok-beta',
+          model: 'grok-3-mini-fast',
           messages: [
             {
               role: 'user',

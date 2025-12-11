@@ -14,6 +14,12 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 GROK_API_KEY=your_grok_api_key
 ```
 
+### Vercel Cron Authentication
+```bash
+CRON_SECRET=your_cron_secret_here
+```
+Note: This is the standard Vercel environment variable for cron job authentication.
+
 ### Legacy (Optional - will be removed)
 ```bash
 OPENAI_API_KEY=your_openai_api_key

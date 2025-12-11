@@ -4,10 +4,13 @@ import { blogGenerator } from '@/lib/blog-generator';
 export async function GET(request: NextRequest) {
   try {
     // Verify this is a legitimate cron request
+    // Vercel Cron uses CRON_SECRET env var automatically
     const authHeader = request.headers.get('authorization');
-    const expectedToken = process.env.CRON_SECRET_TOKEN;
+    const cronSecret = process.env.CRON_SECRET;
 
-    if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+    // Allow if CRON_SECRET matches OR if no secret is configured (for development)
+    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+      console.log('Cron auth failed. Expected Bearer token with CRON_SECRET');
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
