@@ -4,6 +4,72 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { IoTimeOutline, IoPersonOutline, IoArrowForward, IoChevronForward } from 'react-icons/io5';
 
+// Format blog content with enhanced HTML structure for better readability
+function formatBlogContent(content: string): string {
+  let formatted = content;
+  
+  // Convert markdown-style headers to styled HTML
+  formatted = formatted.replace(/^### (.+)$/gm, '<h4>$1</h4>');
+  formatted = formatted.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+  formatted = formatted.replace(/^# (.+)$/gm, '<h2>$1</h2>');
+  
+  // Convert **bold** to styled strong tags
+  formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  
+  // Convert *italic* to styled em tags
+  formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  
+  // Convert `code` to inline code
+  formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
+  
+  // Convert markdown links [text](url) to styled links
+  formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  
+  // Convert blockquotes (lines starting with >)
+  formatted = formatted.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+  
+  // Merge consecutive blockquotes
+  formatted = formatted.replace(/<\/blockquote>\n<blockquote>/g, '\n');
+  
+  // Convert horizontal rules (--- or ***)
+  formatted = formatted.replace(/^(?:---|\*\*\*)$/gm, '<hr />');
+  
+  // Convert unordered lists (lines starting with - or *)
+  formatted = formatted.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
+  formatted = formatted.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+  
+  // Convert numbered lists (lines starting with 1. 2. etc)
+  formatted = formatted.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+  
+  // Split into paragraphs on double newlines
+  const paragraphs = formatted.split(/\n\n+/);
+  
+  formatted = paragraphs.map(para => {
+    const trimmed = para.trim();
+    // Don't wrap if already has block-level HTML
+    if (
+      trimmed.startsWith('<h') ||
+      trimmed.startsWith('<blockquote') ||
+      trimmed.startsWith('<ul') ||
+      trimmed.startsWith('<ol') ||
+      trimmed.startsWith('<hr') ||
+      trimmed.startsWith('<pre') ||
+      trimmed.startsWith('<div')
+    ) {
+      return trimmed;
+    }
+    // Wrap in paragraph if has content
+    if (trimmed.length > 0) {
+      // Convert single line breaks to <br /> within paragraphs
+      const withBreaks = trimmed.replace(/\n/g, '<br />');
+      return `<p>${withBreaks}</p>`;
+    }
+    return '';
+  }).filter(p => p.length > 0).join('\n\n');
+  
+  return formatted;
+}
+
 interface BlogPost {
   id: string;
   title: string;
@@ -354,57 +420,96 @@ export default function BlogSection() {
           </div>
         )}
 
-        {/* Selected Post Content - Mobile Optimized */}
+        {/* Selected Post Content - Enhanced Visual Design */}
         {selectedPost && (
           <div
             id="blog-content"
-            className="neo-float-green p-4 sm:p-6 lg:p-8 mt-8 sm:mt-10 lg:mt-12"
+            className="neo-float-green p-4 sm:p-6 lg:p-10 mt-8 sm:mt-10 lg:mt-12 relative overflow-hidden"
             itemScope
             itemType="https://schema.org/BlogPosting"
           >
-            <div className="max-w-4xl mx-auto">
-              <header className="mb-6 sm:mb-8">
-                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-3 sm:mb-4" itemProp="headline">
+            {/* Decorative background gradient */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#25d695]/10 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-purple-500/10 via-blue-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="max-w-4xl mx-auto relative z-10">
+              <header className="mb-8 sm:mb-10 pb-8 border-b border-gray-700/50">
+                {/* Category/Reading badge */}
+                <div className="flex flex-wrap items-center gap-3 mb-4">
+                  <span className="px-3 py-1 bg-[#25d695]/15 text-[#25d695] text-sm font-semibold rounded-full border border-[#25d695]/30">
+                    Security Insights
+                  </span>
+                  <span className="px-3 py-1 bg-purple-500/15 text-purple-400 text-sm font-medium rounded-full border border-purple-500/30">
+                    {selectedPost.readingTime} min read
+                  </span>
+                </div>
+                
+                {/* Title with gradient accent */}
+                <h3 
+                  className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-5 leading-tight"
+                  style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}
+                  itemProp="headline"
+                >
                   {selectedPost.title}
                 </h3>
-                <div className="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-6 text-gray-400 mb-4 sm:mb-6">
+                
+                {/* Author and date info */}
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-gray-400 mb-6">
                   <div className="flex items-center gap-2">
-                    <IoPersonOutline className="w-5 h-5" />
-                    <span>Shield Nest Team</span>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#25d695] to-purple-500 flex items-center justify-center">
+                      <IoPersonOutline className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-medium text-gray-300">Shield Nest Team</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <IoTimeOutline className="w-5 h-5" />
-                    <span>{selectedPost.readingTime} min read</span>
-                  </div>
-                  <time dateTime={selectedPost.publishedAt} itemProp="datePublished">
+                  <span className="text-gray-600">•</span>
+                  <time dateTime={selectedPost.publishedAt} itemProp="datePublished" className="text-gray-400">
                     {formatDate(selectedPost.publishedAt)}
                   </time>
                 </div>
-                <p className="text-lg sm:text-xl text-gray-300 italic" itemProp="description">
+                
+                {/* Excerpt as lead paragraph */}
+                <p className="text-lg sm:text-xl text-gray-300 leading-relaxed border-l-4 border-[#25d695]/50 pl-4 bg-[#25d695]/5 py-3 rounded-r-lg" itemProp="description">
                   {selectedPost.excerpt}
                 </p>
               </header>
 
-              {/* Blog Content - Mobile Optimized */}
+              {/* Blog Content - Enhanced Readability Styling */}
               <div
-                className="prose prose-sm sm:prose-base lg:prose-lg prose-invert max-w-none text-sm sm:text-base lg:text-base leading-relaxed sm:leading-relaxed lg:leading-relaxed"
+                className="blog-article max-w-none"
                 itemProp="articleBody"
                 dangerouslySetInnerHTML={{
-                  __html: selectedPost.content.replace(/\n/g, '<br />')
+                  __html: formatBlogContent(selectedPost.content)
                 }}
               />
 
-              {/* Keywords for SEO */}
-              <footer className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-gray-700">
-                <div className="flex flex-wrap gap-2">
-                  {selectedPost.keywords.map((keyword, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 bg-[#25d695]/10 text-[#25d695] rounded-full text-sm"
-                    >
-                      {keyword}
-                    </span>
-                  ))}
+              {/* Decorative divider before footer */}
+              <div className="my-10 sm:my-12 flex items-center justify-center">
+                <div className="h-px w-16 bg-gradient-to-r from-transparent to-purple-500/50" />
+                <div className="mx-4 text-[#25d695]">✦</div>
+                <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#25d695]/50" />
+              </div>
+              
+              {/* Keywords for SEO - Enhanced styling */}
+              <footer className="pt-6 sm:pt-8 border-t border-gray-700/50">
+                <p className="text-sm text-gray-500 mb-4 uppercase tracking-wider font-medium">Related Topics</p>
+                <div className="flex flex-wrap gap-2 sm:gap-3">
+                  {selectedPost.keywords.map((keyword, i) => {
+                    // Alternate between color schemes for visual variety
+                    const colors = [
+                      'bg-[#25d695]/10 text-[#25d695] border-[#25d695]/30 hover:bg-[#25d695]/20',
+                      'bg-purple-500/10 text-purple-400 border-purple-500/30 hover:bg-purple-500/20',
+                      'bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20',
+                      'bg-orange-500/10 text-orange-400 border-orange-500/30 hover:bg-orange-500/20',
+                    ];
+                    return (
+                      <span
+                        key={i}
+                        className={`px-4 py-1.5 ${colors[i % colors.length]} rounded-full text-sm font-medium border transition-colors cursor-default`}
+                      >
+                        #{keyword}
+                      </span>
+                    );
+                  })}
                 </div>
               </footer>
             </div>
