@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { IoArrowForward, IoChevronForward, IoLayers, IoCheckmarkCircle, IoGift, IoImages, IoHelpCircle, IoSparkles } from 'react-icons/io5';
+import { IoChevronForward } from 'react-icons/io5';
 
 // Message interface
 interface Message {
@@ -14,13 +14,6 @@ interface Message {
   suggestions?: string[];
 }
 
-// Quick card type for action buttons vs question prompts
-interface QuickCard {
-  type: 'action' | 'question';
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  path?: string;
-}
 
 // Helper function to parse markdown-style text with ENHANCED styling
 const parseMarkdown = (text: string) => {
@@ -353,16 +346,6 @@ const WiseOwlChat = () => {
       sendMessage();
     }
   };
-
-  // Quick cards for initial view
-  const quickCards: QuickCard[] = [
-    { type: 'action', label: 'Staking', icon: IoLayers, path: 'https://v1.shieldnest.org/dashboard?action=stake' },
-    { type: 'action', label: 'Validator', icon: IoCheckmarkCircle, path: 'https://v1.shieldnest.org' },
-    { type: 'action', label: 'Rewards', icon: IoGift, path: 'https://v1.shieldnest.org/rewards' },
-    { type: 'action', label: 'NFTs', icon: IoImages, path: 'https://v1.shieldnest.org/marketplace' },
-    { type: 'question', label: 'What is Coreum?', icon: IoHelpCircle },
-    { type: 'question', label: 'How to stake?', icon: IoSparkles }
-  ];
 
   // Color scheme
   const colors = {
@@ -701,55 +684,6 @@ const WiseOwlChat = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick Action Cards */}
-            {messages.length === 1 && (
-              <div className={`p-0 pb-3 grid grid-cols-3 gap-1.5 ${isMobile ? 'px-3' : 'px-4'}`}>
-                {quickCards.map((card, idx) => {
-                  const IconComponent = card.icon;
-                  const isAction = card.type === 'action';
-                  
-                  return (
-                    <button
-                      key={idx}
-                      className={`border rounded-lg text-[11px] cursor-pointer transition-all flex flex-col items-center justify-center gap-1 ${
-                        isMobile ? 'py-2 px-1.5' : 'py-2.5 px-2'
-                      }`}
-                      style={{
-                        background: isAction 
-                          ? 'rgba(167, 139, 250, 0.12)' 
-                          : 'rgba(37, 214, 149, 0.12)',
-                        borderColor: isAction 
-                          ? 'rgba(167, 139, 250, 0.25)' 
-                          : 'rgba(37, 214, 149, 0.25)',
-                        color: isAction ? '#a78bfa' : '#25d695'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = isAction 
-                          ? 'rgba(167,139,250,0.22)' 
-                          : 'rgba(37,214,149,0.22)';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = isAction 
-                          ? 'rgba(167, 139, 250, 0.12)' 
-                          : 'rgba(37, 214, 149, 0.12)';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                      }}
-                      onClick={() => {
-                        if (isAction && card.path) {
-                          window.open(card.path, '_blank');
-                        } else {
-                          sendMessage(card.label);
-                        }
-                      }}
-                    >
-                      <IconComponent className={`${isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
-                      <span className="leading-tight text-center">{card.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
 
             {/* Input */}
             <div 
