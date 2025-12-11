@@ -187,7 +187,7 @@ export default function ReDelegatePage() {
             <div className="flex flex-col">
               <Link href="/" className="hover:opacity-80 transition-opacity">
                 <h1 className="font-bold text-lg text-white">
-                  ShieldNEST
+                  SHIELDNEST
                 </h1>
               </Link>
 
@@ -265,7 +265,7 @@ export default function ReDelegatePage() {
               </span>
               <br />
               <span className="text-gradient-coreum">
-                ShieldNest
+                SHIELDNEST
               </span>
               <br />
               <span className="bg-gradient-to-r from-white via-orange-100 to-white bg-clip-text text-transparent">
@@ -274,7 +274,7 @@ export default function ReDelegatePage() {
             </h1>
 
             <p className="text-xl sm:text-2xl lg:text-3xl text-gray-400 mb-16 max-w-4xl mx-auto leading-relaxed">
-              Your current validator might be jailed or missing rewards. Switch to ShieldNest's enterprise-grade infrastructure and never miss another reward.
+              Your current validator might be jailed or missing rewards. Switch to SHIELDNEST's enterprise-grade infrastructure and never miss another reward.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-32">
@@ -302,10 +302,10 @@ export default function ReDelegatePage() {
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
-              Why Re-delegate to <span className="text-[#25d695]">ShieldNest?</span>
+              Why Re-delegate to <span className="text-[#25d695]">SHIELDNEST?</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Don't let your staking rewards slip away. Here's why ShieldNest is the superior choice.
+              Don't let your staking rewards slip away. Here's why SHIELDNEST is the superior choice.
             </p>
           </div>
 
@@ -344,7 +344,7 @@ export default function ReDelegatePage() {
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 flex items-center justify-center mb-6 shadow-[0_0_10px_rgba(37,214,149,0.15)]">
                 <IoShieldCheckmarkOutline className="w-8 h-8 text-green-400 drop-shadow-[0_0_8px_rgba(37,214,149,0.6)]" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">ShieldNest Solution</h3>
+              <h3 className="text-2xl font-bold text-white mb-4">SHIELDNEST Solution</h3>
               <p className="text-gray-300 mb-6">
                 Our enterprise-grade infrastructure ensures you never miss rewards:
               </p>
@@ -404,7 +404,7 @@ export default function ReDelegatePage() {
                       <span className="text-[#25d695] font-bold text-sm">1</span>
                     </div>
                     <div>
-                      <p className="text-gray-300">Re-delegate your stake to ShieldNest using the button above</p>
+                      <p className="text-gray-300">Re-delegate your stake to SHIELDNEST using the button above</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -489,7 +489,7 @@ export default function ReDelegatePage() {
               {/* Header */}
               <div className="mb-6 mt-8 relative z-10">
                 <h2 className="text-3xl font-bold text-white bg-gradient-to-r from-purple-400 via-green-400 to-blue-400 bg-clip-text text-transparent">
-                  Re-delegate to ShieldNest
+                  Re-delegate to SHIELDNEST
                 </h2>
               </div>
 
@@ -736,7 +736,7 @@ export default function ReDelegatePage() {
                       Lost Rewards? <span className="text-[#25d695]">2:1 Payback Program</span>
                     </h4>
                     <p className="text-sm text-gray-300 mb-3">
-                      If you previously spoke with us about lost rewards and re-staked with ShieldNest, you may be eligible for our <strong className="text-white">2-to-1 payback program</strong>.
+                      If you previously spoke with us about lost rewards and re-staked with SHIELDNEST, you may be eligible for our <strong className="text-white">2-to-1 payback program</strong>.
                     </p>
                     <p className="text-sm text-gray-400 mb-4">
                       Share your wallet address with us after re-delegating, and we'll begin the verification process.

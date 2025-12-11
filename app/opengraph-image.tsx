@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'ShieldNest - Secure Crypto Portfolio on Coreum | Tokenization, RWAs, NFTs & Passive Income';
+export const alt = 'SHIELDNEST - Secure Crypto Portfolio on Coreum | Tokenization, RWAs, NFTs & Passive Income';
 export const size = {
   width: 1200,
   height: 630,
@@ -74,7 +74,7 @@ export default async function Image() {
               letterSpacing: '-2px',
             }}
           >
-            ShieldNest
+            SHIELDNEST
           </span>
         </div>
 

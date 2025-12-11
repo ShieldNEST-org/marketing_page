@@ -43,8 +43,8 @@ const primaryKeywords = [
 
 // Site Configuration
 const siteConfig = {
-  name: "ShieldNest",
-  title: "ShieldNest - Secure Crypto Portfolio on Coreum | Tokenization, RWAs, NFTs & Passive Income",
+  name: "SHIELDNEST",
+  title: "SHIELDNEST - Secure Crypto Portfolio on Coreum | Tokenization, RWAs, NFTs & Passive Income",
   description: "Track, analyze, and protect your digital assets on Coreum blockchain. Enterprise-grade security for tokenization, RWAs, NFTs, and passive income through staking. Built for Sologenic, Solotex, and the future of decentralized finance. Earn to learn with exclusive Shield NFT benefits.",
   url: "https://shieldnest.org",
   ogImage: "https://shieldnest.org/og-image.png",
@@ -72,17 +72,17 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   keywords: primaryKeywords,
-  authors: [{ name: "ShieldNest", url: siteConfig.url }],
-  creator: "ShieldNest",
-  publisher: "ShieldNest",
+  authors: [{ name: "SHIELDNEST", url: siteConfig.url }],
+  creator: "SHIELDNEST",
+  publisher: "SHIELDNEST",
   
   // Favicon & Icons
   icons: {
     icon: [
-      { url: "/shieldmarketingfavicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/favicon.ico", sizes: "32x32" },
     ],
-    shortcut: "/shieldmarketingfavicon.svg",
+    shortcut: "/favicon.svg",
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180" },
     ],
@@ -104,7 +104,7 @@ export const metadata: Metadata = {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: "ShieldNest - Secure Your Crypto Portfolio on Coreum",
+        alt: "SHIELDNEST - Secure Your Crypto Portfolio on Coreum",
       },
     ],
   },
@@ -233,18 +233,18 @@ const jsonLd = {
       mainEntity: [
         {
           "@type": "Question",
-          name: "What is ShieldNest?",
+          name: "What is SHIELDNEST?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "ShieldNest is a secure crypto portfolio management platform built specifically for the Coreum blockchain. It allows users to track, analyze, and protect their digital assets including tokenized real-world assets (RWAs), NFTs, and earn passive income through staking.",
+            text: "SHIELDNEST is a secure crypto portfolio management platform built specifically for the Coreum blockchain. It allows users to track, analyze, and protect their digital assets including tokenized real-world assets (RWAs), NFTs, and earn passive income through staking.",
           },
         },
         {
           "@type": "Question",
-          name: "How can I earn passive income with ShieldNest?",
+          name: "How can I earn passive income with SHIELDNEST?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "ShieldNest enables passive income through secure staking on the Coreum blockchain. By delegating your CORE tokens to our enterprise-grade validator infrastructure, you can earn staking rewards while maintaining full custody of your assets.",
+            text: "SHIELDNEST enables passive income through secure staking on the Coreum blockchain. By delegating your CORE tokens to our enterprise-grade validator infrastructure, you can earn staking rewards while maintaining full custody of your assets.",
           },
         },
         {
@@ -252,15 +252,15 @@ const jsonLd = {
           name: "What is the Shield NFT?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Shield NFT is an exclusive membership token that unlocks premium features including advanced analytics, exclusive content, priority support, and governance access within the ShieldNest ecosystem.",
+            text: "Shield NFT is an exclusive membership token that unlocks premium features including advanced analytics, exclusive content, priority support, and governance access within the SHIELDNEST ecosystem.",
           },
         },
         {
           "@type": "Question",
-          name: "Does ShieldNest support tokenized real-world assets (RWAs)?",
+          name: "Does SHIELDNEST support tokenized real-world assets (RWAs)?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, ShieldNest fully supports tokenized real-world assets (RWAs) on the Coreum blockchain. Track and manage your tokenized assets alongside cryptocurrencies and NFTs in one unified dashboard.",
+            text: "Yes, SHIELDNEST fully supports tokenized real-world assets (RWAs) on the Coreum blockchain. Track and manage your tokenized assets alongside cryptocurrencies and NFTs in one unified dashboard.",
           },
         },
       ],

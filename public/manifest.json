@@ -1,6 +1,6 @@
 {
-  "name": "ShieldNest - Secure Crypto Portfolio on Coreum",
-  "short_name": "ShieldNest",
+  "name": "SHIELDNEST - Secure Crypto Portfolio on Coreum",
+  "short_name": "SHIELDNEST",
   "description": "Track, analyze, and protect your digital assets on Coreum blockchain. Enterprise-grade security for tokenization, RWAs, NFTs, and passive income through staking.",
   "start_url": "/",
   "display": "standalone",
@@ -12,7 +12,7 @@
   "categories": ["finance", "cryptocurrency", "blockchain", "portfolio"],
   "icons": [
     {
-      "src": "/shieldmarketingfavicon.svg",
+      "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
@@ -36,7 +36,7 @@
       "sizes": "1200x630",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "ShieldNest Dashboard Preview"
+      "label": "SHIELDNEST Dashboard Preview"
     }
   ],
   "related_applications": [],
@@ -45,11 +45,11 @@
     {
       "name": "Launch App",
       "short_name": "App",
-      "description": "Open ShieldNest Application",
+      "description": "Open SHIELDNEST Application",
       "url": "https://v1.shieldnest.org",
       "icons": [
         {
-          "src": "/shieldmarketingfavicon.svg",
+          "src": "/favicon.svg",
           "sizes": "any"
         }
       ]
@@ -61,7 +61,7 @@
       "url": "https://v1.shieldnest.org/dashboard?action=redelegate",
       "icons": [
         {
-          "src": "/shieldmarketingfavicon.svg",
+          "src": "/favicon.svg",
           "sizes": "any"
         }
       ]

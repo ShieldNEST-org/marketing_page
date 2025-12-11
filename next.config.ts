@@ -4,9 +4,21 @@ const nextConfig: NextConfig = {
   // Enable React strict mode for better development
   reactStrictMode: true,
 
+  // Optimize for production
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
+  // Enable experimental features for performance
+  experimental: {
+    optimizeCss: true,
+    scrollRestoration: true,
+  },
+
   // Image optimization configuration
   images: {
     formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
     remotePatterns: [
       {
         protocol: 'https',

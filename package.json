@@ -6,10 +6,13 @@
     "dev": "next dev -p 3003",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "setup-blog": "node scripts/setup-blog.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.87.1",
     "next": "16.0.3",
+    "openai": "^6.10.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-icons": "^5.5.0",

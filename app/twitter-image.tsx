@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'ShieldNest - Secure Crypto Portfolio on Coreum';
+export const alt = 'SHIELDNEST - Secure Crypto Portfolio on Coreum';
 export const size = {
   width: 1200,
   height: 630,
@@ -74,7 +74,7 @@ export default async function Image() {
                 letterSpacing: '-3px',
               }}
             >
-              ShieldNest
+              SHIELDNEST
             </span>
             <span style={{ fontSize: '24px', color: '#9CA3AF', marginTop: '-8px' }}>
               Built on Coreum

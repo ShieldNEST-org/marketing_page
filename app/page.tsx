@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { 
-  IoWalletOutline, 
-  IoPieChartOutline, 
+import BlogSection from '../components/BlogSection';
+import {
+  IoWalletOutline,
+  IoPieChartOutline,
   IoShieldCheckmarkOutline,
   IoLockClosedOutline,
   IoPeopleOutline,
@@ -95,7 +96,7 @@ export default function Home() {
                 alt="ShieldNest Logo"
                 width={33}
                 height={33}
-                className="object-contain w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-12 lg:h-12"
+                className="object-contain w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-[3.125rem] lg:h-[3.125rem]"
                 priority
               />
             </a>
@@ -103,8 +104,8 @@ export default function Home() {
             {/* Brand Name & Social Icons */}
             <div className="flex flex-col">
               <a href="/" className="hover:opacity-80 transition-opacity">
-                <h1 className="font-bold text-lg text-white">
-                  ShieldNEST
+                <h1 className="font-bold text-base text-white">
+                  SHIELDNEST
                 </h1>
               </a>
               
@@ -152,6 +153,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="btn-redelegate px-4 py-2 text-sm flex items-center gap-2"
             >
+              <span className="sm:hidden">Re-delegate</span>
               <span className="hidden sm:inline">Re-delegate</span>
             </a>
 
@@ -159,9 +161,10 @@ export default function Home() {
               href="https://v1.shieldnest.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-coreum-green px-6 py-2 text-sm inline-block"
+              className="btn-coreum-green px-3 py-1.5 sm:px-6 sm:py-2 text-sm inline-block"
             >
-              Launch App →
+              <span className="sm:hidden">APP</span>
+              <span className="hidden sm:inline">Launch App →</span>
             </a>
           </div>
         </div>
@@ -380,7 +383,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
-                Why Choose <span className="text-[#25d695]">ShieldNest?</span>
+                Why Choose <span className="text-[#25d695]">SHIELDNEST?</span>
               </h2>
               
               <div className="space-y-6">
@@ -520,98 +523,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-6 bg-[#101216] overflow-visible">
-        <div className="container mx-auto">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white text-center mb-16 leading-tight" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
-            Choose Your <span className="text-[#25d695]">Tier</span>
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto pt-12 pb-4">
-            {[
-              {
-                name: "Visitor",
-                price: "Free",
-                features: [
-                  "Session-only access",
-                  "Basic portfolio view",
-                  "Price tracking",
-                  "No account required"
-                ],
-                cta: "Try Now",
-                popular: false,
-                cardClass: "stat-card-dash-cyan"
-              },
-              {
-                name: "Public",
-                price: "Free",
-                features: [
-                  "Email/Wallet auth",
-                  "Persistent data",
-                  "Full portfolio features",
-                  "Price alerts",
-                  "Analytics dashboard"
-                ],
-                cta: "Sign Up Free",
-                popular: true,
-                cardClass: "stat-card-dash-green"
-              },
-              {
-                name: "Private",
-                price: "Shield NFT",
-                features: [
-                  "All Public features",
-                  "Premium analytics",
-                  "Exclusive content",
-                  "Priority support",
-                  "Governance access"
-                ],
-                cta: "Get Shield NFT",
-                popular: false,
-                cardClass: "stat-card-dash-purple"
-              }
-            ].map((tier, index) => (
-              <div 
-                key={index}
-                className={`relative stat-card-dash ${tier.cardClass} p-8 ${tier.popular ? 'pt-14' : ''} overflow-visible`}
-              >
-                {tier.popular && (
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 px-6 py-2.5 bg-gradient-to-r from-[#25d695] to-[#179b69] text-white text-xs sm:text-sm font-bold rounded-full z-50 shadow-2xl whitespace-nowrap">
-                    MOST POPULAR
-                  </div>
-                )}
-                
-                <h3 className="text-2xl font-bold text-white mb-2">{tier.name}</h3>
-                <div className="text-4xl font-bold text-[#25d695] mb-6">
-                  {tier.price}
-                </div>
-
-                <ul className="space-y-3 mb-8">
-                  {tier.features.map((feature, i) => (
-                    <li key={i} className="flex items-center text-gray-300">
-                      <IoCheckmarkCircleOutline className="mr-2 text-[#25d695] w-5 h-5 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                <a
-                  href="https://v1.shieldnest.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`block w-full py-3 text-center rounded-lg font-bold transition-all duration-300 ${
-                    tier.popular
-                      ? 'btn-coreum-green'
-                      : 'bg-[#101216] border border-[rgba(37,214,149,0.3)] text-white hover:border-[#25d695]'
-                  }`}
-                >
-                  {tier.cta}
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Blog Section */}
+      <BlogSection />
 
       {/* CTA Section */}
       <section className="py-20 px-6 neo-gradient-bg">
@@ -621,7 +534,7 @@ export default function Home() {
               Ready to Secure Your Portfolio?
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join thousands of users managing their Coreum assets with ShieldNest
+              Join thousands of users managing their Coreum assets with SHIELDNEST
             </p>
             <a
               href="https://v1.shieldnest.org"
@@ -653,7 +566,7 @@ export default function Home() {
               
               <div className="flex flex-col">
                 <a href="/" className="hover:opacity-80 transition-opacity">
-                  <span className="text-lg font-bold text-white">ShieldNEST</span>
+                  <span className="text-lg font-bold text-white">SHIELDNEST</span>
                 </a>
                 
                 {/* Social Icons underneath */}
@@ -700,7 +613,7 @@ export default function Home() {
           </div>
 
           <div className="border-t border-gray-800 pt-6 text-center text-gray-400 text-xs">
-            <p>&copy; 2025 ShieldNest. All rights reserved.</p>
+            <p>&copy; 2025 SHIELDNEST. All rights reserved.</p>
           </div>
         </div>
       </footer>
@@ -759,7 +672,7 @@ export default function Home() {
               </p>
               
               <p className="text-lg sm:text-xl text-gray-300 mt-6 max-w-2xl mx-auto leading-relaxed">
-                Your current security might not be enough. Join thousands who are taking their crypto security to the next level with ShieldNest.
+                Your current security might not be enough. Join thousands who are taking their crypto security to the next level with SHIELDNEST.
               </p>
             </div>
 
