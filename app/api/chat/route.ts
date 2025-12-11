@@ -1,173 +1,82 @@
 import { NextRequest, NextResponse } from 'next/server';
+import OpenAI from 'openai';
 
-// Simple knowledge base for the marketing chatbot
-const knowledgeBase: Record<string, { response: string; suggestions?: string[] }> = {
-  default: {
-    response: `## Welcome to ShieldNest! 🛡️
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-I'm here to help you learn about our platform. Here's what I can tell you about:
+// System prompt for the ShieldNest assistant
+const SYSTEM_PROMPT = `You are the ShieldNest Assistant, a friendly and knowledgeable DeFi guide for the ShieldNest platform built on the Coreum blockchain.
 
-### Our Core Features
-• **Portfolio Tracking** - Real-time monitoring of your Coreum assets
-• **Staking** - Earn rewards with our enterprise-grade validator
-• **Shield NFT** - Premium membership with exclusive benefits
-• **Security** - Bank-level protection for your assets
+## Your Personality
+- Friendly, approachable, and helpful
+- Use emojis sparingly but effectively (🛡️ 💰 ⛓️ 💜)
+- Keep responses concise but informative
+- Break up text with headers and bullet points for readability
 
-### Quick Links
-Visit [v1.shieldnest.org](https://v1.shieldnest.org) to access the full app!
+## Key Information About ShieldNest
 
-What would you like to know more about?`,
-    suggestions: ['Tell me about staking', 'What is Shield NFT?', 'How secure is ShieldNest?']
-  },
-  staking: {
-    response: `## Staking with ShieldNest 💰
+### Platform Features
+- **Portfolio Tracking**: Real-time monitoring of Coreum assets
+- **Staking**: Enterprise-grade validator with 12-core processors, 96GB RAM, dual NVMe, 3Gbps network
+- **Shield NFT**: Premium membership NFT that unlocks private tier features
+- **Security**: Bank-level protection, never access private keys, read-only wallet connections
 
-Our enterprise-grade validator infrastructure is built for **reliability and security**.
+### Validator Infrastructure
+- 12-core processors @ 3.7GHz
+- 96GB RAM for high-throughput
+- Dual NVMe storage
+- 3Gbps network connectivity
+- 24/7 monitoring with automated failover
+- Multiple sentry nodes for DDoS protection
+- 3-of-5 multisig wallet protection
+- Geographically distributed servers
 
-### Why Stake with Us?
+### Shield NFT Benefits
+- Private Tier access with enhanced privacy
+- Priority support
+- Governance voting rights
+- Advanced analytics
+- Early access to new features
+- Bonus staking rewards
 
-• **12-core processors** @ 3.7GHz for maximum performance
-• **96GB RAM** for high-throughput operations
-• **Dual NVMe storage** for ultra-fast I/O
-• **3Gbps network** for low-latency connectivity
-• **24/7 monitoring** with automated failover
-
-### Security Features
-
-• Multiple sentry nodes protecting against DDoS
-• 3-of-5 multisig wallet protection
-• Air-gapped devices for key management
-• Geographically distributed servers
-
-Ready to start earning? Visit our [staking dashboard](https://v1.shieldnest.org/dashboard?action=stake)!`,
-    suggestions: ['What are the rewards?', 'How to re-delegate?', 'Tell me about security']
-  },
-  'shield nft': {
-    response: `## Shield NFT Membership 💜
-
-The **Shield NFT** is your key to premium features in the ShieldNest ecosystem.
-
-### Exclusive Benefits
-
-• **Private Tier Access** - Enhanced privacy features
-• **Priority Support** - Get help faster from our team
-• **Governance Rights** - Vote on platform proposals
-• **Advanced Analytics** - Deeper insights into your portfolio
-• **Early Access** - Be first to try new features
-• **Special Rewards** - Bonus staking incentives
-
-### How to Get One
-
-Shield NFTs are available through our marketplace. Hold one in your wallet to automatically unlock all premium features!
-
-Check out [our marketplace](https://v1.shieldnest.org/marketplace) to explore available NFTs.`,
-    suggestions: ['How much does it cost?', 'What is Private Tier?', 'Tell me about governance']
-  },
-  security: {
-    response: `## Bank-Level Security 🔐
-
-ShieldNest takes your security **seriously**. Here's how we protect you:
-
-### Your Keys, Your Crypto
-
-• We **never** access your private keys
-• All wallet connections use secure protocols
-• Read-only access for portfolio tracking
-
-### Infrastructure Security
-
-• Enterprise-grade bare-metal servers
-• Multiple backup systems for redundancy
-• DDoS protection via sentry nodes
-• 3-of-5 multisig for validator operations
-
-### Privacy First
-
-• No selling of user data
-• Minimal data collection
-• Optional privacy features for Shield NFT holders
-
-Your security is our top priority. Have more questions? Feel free to ask!`,
-    suggestions: ['How do I connect my wallet?', 'Tell me about staking', 'What is Shield NFT?']
-  },
-  coreum: {
-    response: `## Coreum Blockchain ⛓️
-
-**Coreum** is an enterprise-grade Layer 1 blockchain designed for real-world adoption.
-
-### Key Features
-
-• **High Performance** - Fast transaction finality
-• **Smart Tokens** - Programmable assets without smart contracts
-• **ISO 20022** - Compliant with global financial messaging standards
-• **Low Fees** - Cost-effective for all transaction sizes
-
-### Why Build on Coreum?
-
-• Enterprise-ready infrastructure
-• Developer-friendly environment
-• Growing ecosystem of dApps
-• Strong validator network (including ShieldNest!)
-
-ShieldNest is built natively on Coreum to give you the best experience possible.
-
-Want to learn more? Check out the [Coreum documentation](https://docs.coreum.dev).`,
-    suggestions: ['Tell me about staking', 'What wallets are supported?', 'How to get started?']
-  },
-  wallet: {
-    response: `## Wallet Support 👛
-
-ShieldNest integrates seamlessly with popular **Coreum-compatible wallets**.
+### Coreum Blockchain
+- Enterprise-grade Layer 1 blockchain
+- Smart Tokens (programmable without smart contracts)
+- ISO 20022 compliant
+- Fast transaction finality
+- Low fees
 
 ### Supported Wallets
+- Keplr
+- Leap
+- Cosmostation
 
-• **Keplr** - The most popular Cosmos wallet
-• **Leap** - Modern, user-friendly interface
-• **Cosmostation** - Feature-rich mobile option
+### Important Links
+- Main App: https://v1.shieldnest.org
+- Staking: https://v1.shieldnest.org/dashboard?action=stake
+- Marketplace: https://v1.shieldnest.org/marketplace
+- Re-delegate: https://v1.shieldnest.org/dashboard?action=redelegate
 
-### How to Connect
+## Response Formatting
+- Use markdown headers (##, ###) for sections
+- Use **bold** for emphasis
+- Use bullet points for lists
+- Keep paragraphs short (2-3 sentences max)
+- Add line breaks between sections for readability
+- Include relevant links when appropriate
 
-1. Visit [v1.shieldnest.org](https://v1.shieldnest.org)
-2. Click "Connect Wallet" in the top right
-3. Choose your preferred wallet
-4. Approve the connection request
-
-That's it! Your portfolio will be automatically tracked.
-
-Need help? Our assistant is always here to guide you.`,
-    suggestions: ['Is it safe to connect?', 'Tell me about staking', 'What is Shield NFT?']
-  }
-};
-
-// Find the best matching response based on user input
-function findResponse(message: string): { response: string; suggestions?: string[] } {
-  const lowerMessage = message.toLowerCase();
-  
-  // Check for keyword matches
-  if (lowerMessage.includes('stak') || lowerMessage.includes('delegate') || lowerMessage.includes('validator') || lowerMessage.includes('earn')) {
-    return knowledgeBase.staking;
-  }
-  if (lowerMessage.includes('shield nft') || lowerMessage.includes('nft') || lowerMessage.includes('private') || lowerMessage.includes('member')) {
-    return knowledgeBase['shield nft'];
-  }
-  if (lowerMessage.includes('secur') || lowerMessage.includes('safe') || lowerMessage.includes('protect') || lowerMessage.includes('key')) {
-    return knowledgeBase.security;
-  }
-  if (lowerMessage.includes('coreum') || lowerMessage.includes('blockchain') || lowerMessage.includes('chain')) {
-    return knowledgeBase.coreum;
-  }
-  if (lowerMessage.includes('wallet') || lowerMessage.includes('keplr') || lowerMessage.includes('leap') || lowerMessage.includes('connect')) {
-    return knowledgeBase.wallet;
-  }
-  
-  // Default response
-  return knowledgeBase.default;
-}
+## Guidelines
+- Always be helpful and encouraging
+- If you don't know something specific, be honest but offer to help with related topics
+- Focus on ShieldNest, Coreum, DeFi, staking, and crypto security topics
+- Suggest visiting v1.shieldnest.org for actions like staking or connecting wallets`;
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { message } = body;
+    const { message, sessionId } = body;
 
     if (!message || typeof message !== 'string') {
       return NextResponse.json(
@@ -176,19 +85,93 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find the appropriate response
-    const result = findResponse(message);
+    // Check if OpenAI API key is configured
+    if (!process.env.OPENAI_API_KEY) {
+      console.error('[Chat API] OPENAI_API_KEY not configured');
+      return NextResponse.json({
+        response: `## Welcome to ShieldNest! 🛡️
+
+I'm your DeFi assistant. While I'm being configured, here's what you can do:
+
+• Visit [v1.shieldnest.org](https://v1.shieldnest.org) to access the full app
+• Learn about staking with our enterprise-grade validator
+• Explore Shield NFT benefits for premium features
+
+Feel free to ask me anything about Coreum, DeFi, or crypto security!`,
+        suggestions: ['Tell me about staking', 'What is Shield NFT?', 'How secure is ShieldNest?'],
+        canExpand: false
+      });
+    }
+
+    // Call OpenAI API
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: message }
+      ],
+      max_tokens: 1000,
+      temperature: 0.7,
+    });
+
+    const assistantResponse = completion.choices[0]?.message?.content || 
+      'I apologize, but I couldn\'t generate a response. Please try again.';
+
+    // Generate contextual suggestions based on the response
+    const suggestions = generateSuggestions(message, assistantResponse);
 
     return NextResponse.json({
-      response: result.response,
-      suggestions: result.suggestions,
+      response: assistantResponse,
+      suggestions,
       canExpand: false
     });
   } catch (error) {
     console.error('[Chat API] Error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    
+    // Return a friendly fallback response on error
+    return NextResponse.json({
+      response: `## Oops! Something went wrong 😅
+
+I'm having trouble connecting right now. In the meantime:
+
+• Visit [v1.shieldnest.org](https://v1.shieldnest.org) to explore the app
+• Check out our staking features
+• Learn about Shield NFT benefits
+
+Please try again in a moment!`,
+      suggestions: ['Tell me about staking', 'What is Shield NFT?', 'How does Coreum work?'],
+      canExpand: false
+    });
   }
+}
+
+// Generate contextual follow-up suggestions
+function generateSuggestions(userMessage: string, response: string): string[] {
+  const lowerMessage = userMessage.toLowerCase();
+  const lowerResponse = response.toLowerCase();
+  
+  // Default suggestions
+  const allSuggestions = [
+    'Tell me about staking',
+    'What is Shield NFT?',
+    'How secure is ShieldNest?',
+    'What is Coreum?',
+    'How do I connect my wallet?',
+    'What are the staking rewards?',
+    'Tell me about Private Tier',
+    'How to re-delegate?'
+  ];
+  
+  // Filter out suggestions that are similar to what was just asked
+  const filtered = allSuggestions.filter(s => {
+    const lowerSuggestion = s.toLowerCase();
+    // Don't suggest if it's too similar to the user's message
+    if (lowerMessage.includes(lowerSuggestion.slice(0, 10))) return false;
+    // Don't suggest if it was already covered in the response
+    if (lowerResponse.includes(lowerSuggestion.slice(0, 10))) return false;
+    return true;
+  });
+  
+  // Return 3 random suggestions
+  return filtered.sort(() => Math.random() - 0.5).slice(0, 3);
 }
