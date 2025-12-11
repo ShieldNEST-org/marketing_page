@@ -128,6 +128,39 @@ interface BlogResponse {
   };
 }
 
+// Helper to group posts by date
+function groupPostsByDate(posts: BlogPost[]): Map<string, BlogPost[]> {
+  const grouped = new Map<string, BlogPost[]>();
+  posts.forEach(post => {
+    const dateKey = new Date(post.publishedAt).toISOString().split('T')[0];
+    if (!grouped.has(dateKey)) {
+      grouped.set(dateKey, []);
+    }
+    grouped.get(dateKey)!.push(post);
+  });
+  return grouped;
+}
+
+// Helper to format date for section headers
+function formatDateHeader(dateString: string): string {
+  const date = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  if (date.toDateString() === today.toDateString()) {
+    return 'Today';
+  } else if (date.toDateString() === yesterday.toDateString()) {
+    return 'Yesterday';
+  }
+  
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
 export default function BlogSection() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,19 +168,20 @@ export default function BlogSection() {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [historyOffset, setHistoryOffset] = useState(0);
-  const [showLoadMore, setShowLoadMore] = useState(false);
+  const [visibleDays, setVisibleDays] = useState(5);
   
   // Track if initial fetch has been done to prevent refetch
   const hasFetched = useRef(false);
   // Track component mount state to prevent state updates after unmount
   const isMounted = useRef(true);
+  
+  // Refs for horizontal scroll containers
+  const scrollContainerRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   // Lighthouse-optimized data fetching with error boundaries
-  const fetchBlogPosts = useCallback(async (type: 'today' | 'history' = 'today', offset: number = 0) => {
+  const fetchBlogPosts = useCallback(async (loadMore: boolean = false) => {
     try {
-      if (type === 'today') {
-        // Only show loading if we don't have posts yet (prevents flash)
+      if (!loadMore) {
         if (posts.length === 0) {
           setLoading(true);
         }
@@ -156,15 +190,14 @@ export default function BlogSection() {
         setLoadingMore(true);
       }
 
+      // Fetch more posts to ensure we have enough days of content
       const params = new URLSearchParams({
-        type,
-        limit: type === 'today' ? '10' : '3',
-        ...(type === 'history' && { offset: offset.toString() })
+        type: 'today',
+        limit: '50', // Get more posts to have multiple days
       });
 
       const response = await fetch(`/api/blog?${params}`, {
-        // Use cache for initial load, no-store for explicit refreshes
-        cache: type === 'today' ? 'default' : 'no-store',
+        cache: 'default',
       });
 
       if (!response.ok) {
@@ -173,40 +206,27 @@ export default function BlogSection() {
 
       const data: BlogResponse = await response.json();
 
-      // Only update state if component is still mounted
       if (!isMounted.current) return;
 
-      if (type === 'today') {
-        // Performance optimization: Preload critical content
-        setPosts(data.posts);
-        setShowLoadMore(data.posts.length > 0);
-        setHasMore(data.posts.length >= 10); // If we got 10, there might be more
+      setPosts(data.posts);
+      setHasMore(data.posts.length >= 50);
 
-        // Accessibility: Announce content loaded to screen readers
-        if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-          const announcement = document.createElement('div');
-          announcement.setAttribute('aria-live', 'polite');
-          announcement.setAttribute('aria-atomic', 'true');
-          announcement.className = 'sr-only';
-          announcement.textContent = `Loaded ${data.posts.length} blog posts about crypto security`;
-          document.body.appendChild(announcement);
-          setTimeout(() => document.body.removeChild(announcement), 1000);
-        }
-      } else {
-        // Append historical posts
-        setPosts(prevPosts => [...prevPosts, ...data.posts]);
-        setHasMore(data.meta.hasMore || false);
-        setHistoryOffset(prevOffset => prevOffset + 3);
+      // Accessibility: Announce content loaded
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        const announcement = document.createElement('div');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.setAttribute('aria-atomic', 'true');
+        announcement.className = 'sr-only';
+        announcement.textContent = `Loaded ${data.posts.length} blog posts about crypto security`;
+        document.body.appendChild(announcement);
+        setTimeout(() => document.body.removeChild(announcement), 1000);
       }
 
     } catch (err) {
-      // Only update state if component is still mounted
       if (!isMounted.current) return;
-      
       setError(err instanceof Error ? err.message : 'Failed to load blog posts');
       console.error('Blog loading error:', err);
     } finally {
-      // Only update state if component is still mounted
       if (isMounted.current) {
         setLoading(false);
         setLoadingMore(false);
@@ -214,12 +234,22 @@ export default function BlogSection() {
     }
   }, [posts.length]);
 
-  // Load more historical posts
-  const loadMorePosts = useCallback(() => {
-    if (!loadingMore && hasMore) {
-      fetchBlogPosts('history', historyOffset);
+  // Load more days
+  const loadMoreDays = useCallback(() => {
+    setVisibleDays(prev => prev + 5);
+  }, []);
+  
+  // Scroll handlers for horizontal navigation
+  const scrollRow = useCallback((dateKey: string, direction: 'left' | 'right') => {
+    const container = scrollContainerRefs.current.get(dateKey);
+    if (container) {
+      const scrollAmount = 320; // Card width + gap
+      container.scrollBy({
+        left: direction === 'right' ? scrollAmount : -scrollAmount,
+        behavior: 'smooth'
+      });
     }
-  }, [fetchBlogPosts, loadingMore, hasMore, historyOffset]);
+  }, []);
 
   useEffect(() => {
     // Set mounted ref
@@ -341,123 +371,170 @@ export default function BlogSection() {
           </p>
           {posts.length > 0 && (
             <div className="mt-4 text-sm text-gray-400">
-              {posts.length} posts published today • Fresh content throughout the day
+              {posts.length} posts • Scroll to explore each day's content
             </div>
           )}
         </header>
 
-        {/* Blog Grid - Mobile Optimized */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12">
-          {posts.map((post, index) => (
-            <article
-              key={post.id}
-              className="group neo-float-purple p-4 sm:p-5 lg:p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02]"
-              onClick={() => handlePostClick(post)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handlePostClick(post);
-                }
-              }}
-              tabIndex={0}
-              role="button"
-              aria-label={`Read ${post.title}`}
-              itemScope
-              itemType="https://schema.org/BlogPosting"
-            >
-              {/* Blog Post Image */}
-              <div className="relative h-32 sm:h-40 lg:h-48 mb-4 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 overflow-hidden">
-                {post.imageUrl ? (
-                  <Image
-                    src={post.imageUrl}
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    unoptimized
-                  />
-                ) : (
-                  <>
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#25d695]/10 to-purple-500/10"></div>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#25d695]/20 to-purple-500/20 border border-[#25d695]/30 flex items-center justify-center overflow-hidden">
-                        <Image
-                          src="/shieldmarketingfavicon.svg"
-                          alt="Shield Nest Team"
-                          width={64}
-                          height={64}
-                          className="object-cover scale-110"
-                        />
+        {/* Blog Posts Grouped by Day - Horizontal Scroll */}
+        <div className="space-y-8 sm:space-y-10 mb-12">
+          {(() => {
+            const grouped = groupPostsByDate(posts);
+            const sortedDates = Array.from(grouped.keys()).sort((a, b) => 
+              new Date(b).getTime() - new Date(a).getTime()
+            );
+            const visibleDates = sortedDates.slice(0, visibleDays);
+            const hasMoreDays = sortedDates.length > visibleDays;
+            
+            return (
+              <>
+                {visibleDates.map((dateKey) => {
+                  const dayPosts = grouped.get(dateKey) || [];
+                  return (
+                    <div key={dateKey} className="relative">
+                      {/* Day Header */}
+                      <div className="flex items-center justify-between mb-4 px-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-xl sm:text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
+                            {formatDateHeader(dateKey)}
+                          </h3>
+                          <span className="px-2.5 py-1 bg-[#25d695]/15 text-[#25d695] text-sm font-medium rounded-full border border-[#25d695]/30">
+                            {dayPosts.length} {dayPosts.length === 1 ? 'post' : 'posts'}
+                          </span>
+                        </div>
+                        {/* Scroll Arrows - Desktop */}
+                        <div className="hidden sm:flex items-center gap-2">
+                          <button
+                            onClick={() => scrollRow(dateKey, 'left')}
+                            className="p-2 rounded-full bg-gray-800/50 hover:bg-gray-700/70 text-gray-400 hover:text-white transition-all border border-gray-700/50"
+                            aria-label="Scroll left"
+                          >
+                            <IoChevronForward className="w-5 h-5 rotate-180" />
+                          </button>
+                          <button
+                            onClick={() => scrollRow(dateKey, 'right')}
+                            className="p-2 rounded-full bg-gray-800/50 hover:bg-gray-700/70 text-gray-400 hover:text-white transition-all border border-gray-700/50"
+                            aria-label="Scroll right"
+                          >
+                            <IoChevronForward className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Horizontal Scroll Container */}
+                      <div 
+                        ref={(el) => {
+                          if (el) scrollContainerRefs.current.set(dateKey, el);
+                        }}
+                        className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
+                        style={{ 
+                          scrollbarWidth: 'none', 
+                          msOverflowStyle: 'none',
+                          WebkitOverflowScrolling: 'touch'
+                        }}
+                      >
+                        {dayPosts.map((post) => (
+                          <article
+                            key={post.id}
+                            className="group neo-float-purple p-4 cursor-pointer transition-all duration-300 hover:scale-[1.02] flex-shrink-0 w-[280px] sm:w-[300px] snap-start"
+                            onClick={() => handlePostClick(post)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handlePostClick(post);
+                              }
+                            }}
+                            tabIndex={0}
+                            role="button"
+                            aria-label={`Read ${post.title}`}
+                            itemScope
+                            itemType="https://schema.org/BlogPosting"
+                          >
+                            {/* Blog Post Image */}
+                            <div className="relative h-36 mb-3 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 overflow-hidden">
+                              {post.imageUrl ? (
+                                <Image
+                                  src={post.imageUrl}
+                                  alt={post.title}
+                                  fill
+                                  className="object-cover"
+                                  sizes="300px"
+                                  unoptimized
+                                />
+                              ) : (
+                                <>
+                                  <div className="absolute inset-0 bg-gradient-to-br from-[#25d695]/10 to-purple-500/10"></div>
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#25d695]/20 to-purple-500/20 border border-[#25d695]/30 flex items-center justify-center overflow-hidden">
+                                      <Image
+                                        src="/shieldmarketingfavicon.svg"
+                                        alt="Shield Nest Team"
+                                        width={56}
+                                        height={56}
+                                        className="object-cover scale-110"
+                                      />
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                              {/* Reading time badge */}
+                              <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                                {post.readingTime} min
+                              </div>
+                            </div>
+
+                            {/* Structured Data for SEO */}
+                            <meta itemProp="headline" content={post.title} />
+                            <meta itemProp="author" content={post.author} />
+                            <meta itemProp="datePublished" content={post.publishedAt} />
+                            <meta itemProp="keywords" content={post.keywords.join(', ')} />
+
+                            <h4
+                              className="text-base font-bold text-purple-400 mb-2 group-hover:text-purple-300 transition-colors line-clamp-2"
+                              itemProp="name"
+                            >
+                              {post.title}
+                            </h4>
+
+                            <p className="text-gray-400 text-sm mb-3 line-clamp-2" itemProp="description">
+                              {post.excerpt}
+                            </p>
+
+                            {/* Post Meta */}
+                            <div className="flex items-center justify-between text-xs text-gray-500">
+                              <div className="flex items-center gap-1">
+                                <IoTimeOutline className="w-3.5 h-3.5" />
+                                <span>{post.readingTime} min read</span>
+                              </div>
+                              <IoChevronForward className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                          </article>
+                        ))}
                       </div>
                     </div>
-                  </>
-                )}
-                {/* Reading time badge */}
-                <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                  {post.readingTime} min read
-                </div>
-              </div>
-
-              {/* Structured Data for SEO */}
-              <meta itemProp="headline" content={post.title} />
-              <meta itemProp="author" content={post.author} />
-              <meta itemProp="datePublished" content={post.publishedAt} />
-              <meta itemProp="keywords" content={post.keywords.join(', ')} />
-
-              <h3
-                className="text-lg sm:text-xl lg:text-xl font-bold text-purple-400 mb-3 group-hover:text-purple-300 transition-colors line-clamp-2"
-                itemProp="name"
-              >
-                {post.title}
-              </h3>
-
-              <p className="text-gray-400 mb-4 line-clamp-3" itemProp="description">
-                {post.excerpt}
-              </p>
-
-              {/* Post Meta */}
-              <div className="flex items-center justify-between text-sm text-gray-500">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1">
-                    <IoTimeOutline className="w-4 h-4" />
-                    <span>{post.readingTime} min</span>
+                  );
+                })}
+                
+                {/* Load Previous Days Button */}
+                {hasMoreDays && (
+                  <div className="text-center mt-8 sm:mt-10">
+                    <button
+                      onClick={loadMoreDays}
+                      className="btn-coreum-green px-8 py-3 text-lg inline-flex items-center gap-3"
+                      aria-label="Load previous 5 days of blog posts"
+                    >
+                      Load Previous 5 Days
+                      <IoChevronForward className="w-5 h-5 rotate-90" />
+                    </button>
+                    <p className="text-sm text-gray-400 mt-2">
+                      {sortedDates.length - visibleDays} more days available
+                    </p>
                   </div>
-                  <time dateTime={post.publishedAt} itemProp="datePublished">
-                    {formatDate(post.publishedAt)}
-                  </time>
-                </div>
-                <IoChevronForward className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </article>
-          ))}
+                )}
+              </>
+            );
+          })()}
         </div>
-
-        {/* Load More Button */}
-        {showLoadMore && hasMore && (
-          <div className="text-center mt-8 sm:mt-12">
-            <button
-              onClick={loadMorePosts}
-              disabled={loadingMore}
-              className="btn-coreum-green px-8 py-3 text-lg inline-flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Load more historical blog posts"
-            >
-              {loadingMore ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Loading...
-                </>
-              ) : (
-                <>
-                  Load More Posts
-                  <IoChevronForward className="w-5 h-5" />
-                </>
-              )}
-            </button>
-            <p className="text-sm text-gray-400 mt-2">
-              Load 3 more posts from our history
-            </p>
-          </div>
-        )}
 
         {/* Selected Post Content - Enhanced Visual Design */}
         {selectedPost && (
