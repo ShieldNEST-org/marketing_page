@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import WiseOwlChat from "@/components/WiseOwlChat";
 
 const inter = Inter({ subsets: ["latin"] });
 const spaceGrotesk = Space_Grotesk({ 
@@ -293,6 +294,7 @@ export default function RootLayout({
       
       <body className={`${inter.className} ${spaceGrotesk.variable}`}>
         {children}
+        <WiseOwlChat />
         
         {/* Google Analytics 4 */}
         <Script
