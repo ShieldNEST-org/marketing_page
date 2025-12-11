@@ -121,10 +121,16 @@ class BlogGenerator {
   }
 
   private async generateImage(title: string): Promise<string | undefined> {
-    try {
-      const imagePrompt = `Create a professional, cost-effective illustration for a blog post titled: "${title}". Style: modern tech, blockchain/cryptocurrency theme, clean and minimal design. Focus on security and innovation concepts.`;
+    if (!this.isConfigured()) {
+      console.warn('Grok API not configured, skipping image generation');
+      return undefined;
+    }
 
-      const imageResponse = await fetch(`${this.baseUrl}/images/generations`, {
+    try {
+      const imagePrompt = `Create a professional illustration for a blog post titled: "${title}". Style: modern tech, blockchain/cryptocurrency theme, clean and minimal design. Focus on security, innovation, and digital concepts. Make it suitable for a tech blog about crypto security.`;
+
+      // Use xAI's image generation API
+      const imageResponse = await fetch('https://api.x.ai/v1/images/generations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -132,18 +138,30 @@ class BlogGenerator {
         },
         body: JSON.stringify({
           prompt: imagePrompt,
+          model: 'grok-2-image',
           n: 1,
           size: '512x512',
+          response_format: 'url'
         }),
       });
 
       if (!imageResponse.ok) {
-        console.warn('Image generation failed, continuing without image');
+        const errorText = await imageResponse.text();
+        console.warn('Image generation failed:', imageResponse.status, errorText);
         return undefined;
       }
 
       const imageData = await imageResponse.json();
-      return imageData.data[0].url;
+
+      // Handle different response formats
+      if (imageData.data && imageData.data[0] && imageData.data[0].url) {
+        return imageData.data[0].url;
+      } else if (imageData.url) {
+        return imageData.url;
+      } else {
+        console.warn('Unexpected image response format:', imageData);
+        return undefined;
+      }
     } catch (error) {
       console.warn('Image generation error:', error);
       return undefined;
@@ -190,8 +208,15 @@ Return as valid JSON with this exact structure:
           continue;
         }
 
-        // Generate image (optional, cost-effective)
+        // Generate image based on the blog post title
+        console.log(`Generating image for: "${postData.title}"`);
         const imageUrl = await this.generateImage(postData.title);
+
+        if (imageUrl) {
+          console.log(`Generated image: ${imageUrl}`);
+        } else {
+          console.log('Image generation skipped or failed');
+        }
 
         const blogPost: BlogPostData = {
           title: postData.title,
@@ -207,8 +232,8 @@ Return as valid JSON with this exact structure:
 
         posts.push(blogPost);
 
-        // Small delay to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Small delay to avoid rate limiting (longer for image generation)
+        await new Promise(resolve => setTimeout(resolve, 3000));
 
       } catch (error) {
         console.error(`Error generating post for topic "${topic}":`, error);
