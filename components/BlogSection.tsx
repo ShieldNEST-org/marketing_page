@@ -204,7 +204,7 @@ export default function BlogSection() {
           </p>
           {posts.length > 0 && (
             <div className="mt-4 text-sm text-gray-400">
-              {posts.length} posts published today • Updated daily at 9 AM UTC
+              {posts.length} posts published today • Fresh content throughout the day
             </div>
           )}
         </header>

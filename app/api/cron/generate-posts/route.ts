@@ -14,12 +14,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log('Starting daily blog post generation...');
+    // Get the count from query params (default to 2 for spaced generation)
+    const { searchParams } = new URL(request.url);
+    const count = Math.min(parseInt(searchParams.get('count') || '2'), 10);
 
-    // Generate and save 10 blog posts
-    const posts = await blogGenerator.generateAndSavePosts(10);
+    const currentHour = new Date().getUTCHours();
+    console.log(`Starting blog post generation at ${currentHour}:00 UTC - generating ${count} posts...`);
 
-    console.log(`Successfully generated and saved ${posts.length} blog posts`);
+    // Generate and save blog posts
+    const posts = await blogGenerator.generateAndSavePosts(count);
+
+    console.log(`Successfully generated and saved ${posts.length} blog posts at ${currentHour}:00 UTC`);
 
     return NextResponse.json({
       success: true,

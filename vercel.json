@@ -1,8 +1,24 @@
 {
   "crons": [
     {
-      "path": "/api/cron/generate-posts",
-      "schedule": "0 9 * * *"
+      "path": "/api/cron/generate-posts?count=2",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/generate-posts?count=2",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/generate-posts?count=2",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/generate-posts?count=2",
+      "schedule": "0 17 * * *"
+    },
+    {
+      "path": "/api/cron/generate-posts?count=2",
+      "schedule": "0 21 * * *"
     }
   ],
   "redirects": [

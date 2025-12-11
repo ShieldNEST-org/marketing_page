@@ -51,7 +51,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see the landing page.
 4. **Run setup script**: `npm run setup-blog`
 5. **Deploy to Vercel** - cron jobs will run automatically
 
-The blog system generates 10 posts daily at 9 AM UTC covering:
+The blog system generates 10 posts daily at optimal times (2, 8, 12, 17, 21 UTC) covering:
 - Coreum blockchain security
 - Cosmos ecosystem updates
 - Airdrop strategies and opportunities

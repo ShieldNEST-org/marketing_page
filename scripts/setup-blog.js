@@ -99,7 +99,7 @@ async function setupBlogSystem() {
   console.log('\nNext steps:');
   console.log('1. Deploy to Vercel');
   console.log('2. Set up environment variables in Vercel dashboard');
-  console.log('3. The daily cron job will run at 9 AM UTC');
+  console.log('3. Posts will generate throughout the day (2, 8, 12, 17, 21 UTC)');
   console.log('4. Check your blog section to see the posts');
 
   if (!generateSample) {
