@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "setup-blog": "node scripts/setup-blog.js"
+    "setup-blog": "node scripts/setup-blog.js",
+    "test-image": "node scripts/test-image-gen.js"
   },
   "dependencies": {
     "@ai-sdk/xai": "^2.0.39",
