@@ -384,9 +384,9 @@ export default function BlogSection() {
                         <Image
                           src="/shieldmarketingfavicon.svg"
                           alt="Shield Nest Team"
-                          width={40}
-                          height={40}
-                          className="object-contain"
+                          width={64}
+                          height={64}
+                          className="object-cover scale-110"
                         />
                       </div>
                     </div>
@@ -499,9 +499,9 @@ export default function BlogSection() {
                       <Image
                         src="/shieldmarketingfavicon.svg"
                         alt="Shield Nest Team"
-                        width={20}
-                        height={20}
-                        className="object-contain"
+                        width={32}
+                        height={32}
+                        className="object-cover scale-110"
                       />
                     </div>
                     <span className="font-medium text-gray-300">Shield Nest Team</span>
