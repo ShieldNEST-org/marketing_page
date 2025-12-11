@@ -83,7 +83,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0e0e0e]">
+    <div className="min-h-screen bg-[#0e0e0e] overflow-x-hidden">
       {/* Header */}
       <header className="sticky top-0 z-40 w-full border-b border-gray-800 bg-gray-900">
         <div className="container flex h-16 py-2 items-center justify-between px-4 sm:px-6 lg:px-8 max-w-[88rem] mx-auto">

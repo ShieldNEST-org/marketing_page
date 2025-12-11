@@ -219,6 +219,12 @@ export default function BlogSection() {
     );
   }
 
+  // If no posts and not loading, don't render the section at all
+  // This prevents the big empty black stripe on mobile
+  if (posts.length === 0 && !loading) {
+    return null;
+  }
+
   return (
     <section id="blog" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 bg-[#101216]" aria-labelledby="blog-title">
       <div className="container mx-auto max-w-7xl">
