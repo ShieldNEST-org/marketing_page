@@ -684,6 +684,40 @@ const WiseOwlChat = () => {
               <div ref={messagesEndRef} />
             </div>
 
+            {/* Quick Info Prompts - Only show on initial message */}
+            {messages.length === 1 && (
+              <div className={`px-4 pb-3 flex flex-wrap gap-2`}>
+                {[
+                  'What is Coreum?',
+                  'Tell me about staking',
+                  'What is Shield NFT?',
+                  'How secure is it?'
+                ].map((prompt, idx) => (
+                  <button
+                    key={idx}
+                    className="border rounded-full text-xs py-2 px-4 cursor-pointer transition-all"
+                    style={{
+                      background: 'rgba(37, 214, 149, 0.1)',
+                      borderColor: 'rgba(37, 214, 149, 0.25)',
+                      color: '#25d695'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(37,214,149,0.2)';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,214,149,0.2)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(37, 214, 149, 0.1)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                    onClick={() => sendMessage(prompt)}
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Input */}
             <div 
