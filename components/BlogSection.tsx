@@ -2,48 +2,78 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import { IoTimeOutline, IoPersonOutline, IoArrowForward, IoChevronForward } from 'react-icons/io5';
+import { IoTimeOutline, IoArrowForward, IoChevronForward, IoCloseOutline } from 'react-icons/io5';
 
-// Format blog content with enhanced HTML structure for better readability
+// Format blog content with enhanced HTML structure for better readability and engagement
 function formatBlogContent(content: string): string {
   let formatted = content;
-  
+
   // Convert markdown-style headers to styled HTML
   formatted = formatted.replace(/^### (.+)$/gm, '<h4>$1</h4>');
   formatted = formatted.replace(/^## (.+)$/gm, '<h3>$1</h3>');
   formatted = formatted.replace(/^# (.+)$/gm, '<h2>$1</h2>');
-  
+
   // Convert **bold** to styled strong tags
   formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  
+
   // Convert *italic* to styled em tags
   formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  
+
   // Convert `code` to inline code
   formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
-  
+
   // Convert markdown links [text](url) to styled links
   formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-  
+
   // Convert blockquotes (lines starting with >)
   formatted = formatted.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
-  
+
   // Merge consecutive blockquotes
   formatted = formatted.replace(/<\/blockquote>\n<blockquote>/g, '\n');
-  
+
   // Convert horizontal rules (--- or ***)
   formatted = formatted.replace(/^(?:---|\*\*\*)$/gm, '<hr />');
-  
+
   // Convert unordered lists (lines starting with - or *)
   formatted = formatted.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
   formatted = formatted.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-  
+
   // Convert numbered lists (lines starting with 1. 2. etc)
   formatted = formatted.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-  
+
+  // Add visual enhancements for engagement
+
+  // Highlight key crypto terms with purple color
+  const cryptoTerms = [
+    'Coreum', 'blockchain', 'DeFi', 'smart contracts', 'tokens', 'NFTs',
+    'security', 'portfolio', 'staking', 'yield', 'governance', 'interoperability',
+    'cross-chain', 'Cosmos', 'enterprise', 'scalability', 'TPS', 'gas fees',
+    'real-world assets', 'compliance', 'SHIELDNEST'
+  ];
+
+  cryptoTerms.forEach(term => {
+    const regex = new RegExp(`\\b${term}\\b`, 'gi');
+    formatted = formatted.replace(regex, `<span class="highlight-crypto">${term}</span>`);
+  });
+
+  // Highlight percentages and numbers
+  formatted = formatted.replace(/(\d+(?:\.\d+)?%)/g, '<span class="highlight-percentage">$1</span>');
+
+  // Highlight monetary values
+  formatted = formatted.replace(/(\$\d+(?:,\d{3})*(?:\.\d{2})?)/g, '<span class="highlight-money">$1</span>');
+
+  // Create callout boxes for important points (lines starting with !!!)
+  formatted = formatted.replace(/^!!! (.+)$/gm, '<div class="callout-box">$1</div>');
+
+  // Create warning boxes (lines starting with ⚠️ or WARNING)
+  formatted = formatted.replace(/^(?:⚠️|WARNING:?) (.+)$/gm, '<div class="warning-box">$1</div>');
+
+  // Create success/tip boxes (lines starting with ✅ or TIP)
+  formatted = formatted.replace(/^(?:✅|TIP:?) (.+)$/gm, '<div class="tip-box">$1</div>');
+
   // Split into paragraphs on double newlines
   const paragraphs = formatted.split(/\n\n+/);
-  
+
   formatted = paragraphs.map(para => {
     const trimmed = para.trim();
     // Don't wrap if already has block-level HTML
@@ -54,7 +84,10 @@ function formatBlogContent(content: string): string {
       trimmed.startsWith('<ol') ||
       trimmed.startsWith('<hr') ||
       trimmed.startsWith('<pre') ||
-      trimmed.startsWith('<div')
+      trimmed.startsWith('<div') ||
+      trimmed.startsWith('<callout-box') ||
+      trimmed.startsWith('<warning-box') ||
+      trimmed.startsWith('<tip-box')
     ) {
       return trimmed;
     }
@@ -66,7 +99,7 @@ function formatBlogContent(content: string): string {
     }
     return '';
   }).filter(p => p.length > 0).join('\n\n');
-  
+
   return formatted;
 }
 
@@ -232,7 +265,7 @@ export default function BlogSection() {
           <div className="text-center mb-16">
             <h2
               id="blog-title"
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-100 mb-6 leading-tight"
               style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}
             >
               Latest from Our <span className="text-[#25d695]">Security Blog</span>
@@ -347,8 +380,14 @@ export default function BlogSection() {
                   <>
                     <div className="absolute inset-0 bg-gradient-to-br from-[#25d695]/10 to-purple-500/10"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#25d695]/20 to-purple-500/20 border border-[#25d695]/30 flex items-center justify-center">
-                        <IoPersonOutline className="w-8 h-8 text-[#25d695]" />
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#25d695]/20 to-purple-500/20 border border-[#25d695]/30 flex items-center justify-center overflow-hidden">
+                        <Image
+                          src="/shieldmarketingfavicon.svg"
+                          alt="Shield Nest Team"
+                          width={40}
+                          height={40}
+                          className="object-contain"
+                        />
                       </div>
                     </div>
                   </>
@@ -366,7 +405,7 @@ export default function BlogSection() {
               <meta itemProp="keywords" content={post.keywords.join(', ')} />
 
               <h3
-                className="text-lg sm:text-xl lg:text-xl font-bold text-white mb-3 group-hover:text-[#25d695] transition-colors line-clamp-2"
+                className="text-lg sm:text-xl lg:text-xl font-bold text-purple-400 mb-3 group-hover:text-purple-300 transition-colors line-clamp-2"
                 itemProp="name"
               >
                 {post.title}
@@ -446,7 +485,7 @@ export default function BlogSection() {
                 
                 {/* Title with gradient accent */}
                 <h3 
-                  className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-5 leading-tight"
+                  className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-100 mb-4 sm:mb-5 leading-tight"
                   style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}
                   itemProp="headline"
                 >
@@ -456,8 +495,14 @@ export default function BlogSection() {
                 {/* Author and date info */}
                 <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-gray-400 mb-6">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#25d695] to-purple-500 flex items-center justify-center">
-                      <IoPersonOutline className="w-4 h-4 text-white" />
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#25d695]/20 to-purple-500/20 border border-[#25d695]/30 flex items-center justify-center overflow-hidden">
+                      <Image
+                        src="/shieldmarketingfavicon.svg"
+                        alt="Shield Nest Team"
+                        width={20}
+                        height={20}
+                        className="object-contain"
+                      />
                     </div>
                     <span className="font-medium text-gray-300">Shield Nest Team</span>
                   </div>
@@ -512,6 +557,20 @@ export default function BlogSection() {
                   })}
                 </div>
               </footer>
+
+              {/* Close Button - Sticky to Bottom */}
+              <div className="sticky bottom-0 left-0 right-0 bg-[#101216]/95 backdrop-blur-md border-t border-gray-700/50 p-4 mt-8">
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => setSelectedPost(null)}
+                    className="flex items-center gap-2 px-6 py-3 bg-[#101216] border-2 border-red-500/40 hover:border-red-500 rounded-xl text-red-400 hover:text-red-300 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_4px_25px_rgba(239,68,68,0.3)] group"
+                    aria-label="Close blog post"
+                  >
+                    <span className="text-sm font-medium">Close Article</span>
+                    <IoCloseOutline className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
