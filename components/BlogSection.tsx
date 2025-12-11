@@ -41,27 +41,6 @@ function formatBlogContent(content: string): string {
   // Convert numbered lists (lines starting with 1. 2. etc)
   formatted = formatted.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
 
-  // Add visual enhancements for engagement
-
-  // Highlight key crypto terms with purple color
-  const cryptoTerms = [
-    'Coreum', 'blockchain', 'DeFi', 'smart contracts', 'tokens', 'NFTs',
-    'security', 'portfolio', 'staking', 'yield', 'governance', 'interoperability',
-    'cross-chain', 'Cosmos', 'enterprise', 'scalability', 'TPS', 'gas fees',
-    'real-world assets', 'compliance', 'SHIELDNEST'
-  ];
-
-  cryptoTerms.forEach(term => {
-    const regex = new RegExp(`\\b${term}\\b`, 'gi');
-    formatted = formatted.replace(regex, `<span class="highlight-crypto">${term}</span>`);
-  });
-
-  // Highlight percentages and numbers
-  formatted = formatted.replace(/(\d+(?:\.\d+)?%)/g, '<span class="highlight-percentage">$1</span>');
-
-  // Highlight monetary values
-  formatted = formatted.replace(/(\$\d+(?:,\d{3})*(?:\.\d{2})?)/g, '<span class="highlight-money">$1</span>');
-
   // Create callout boxes for important points (lines starting with !!!)
   formatted = formatted.replace(/^!!! (.+)$/gm, '<div class="callout-box">$1</div>');
 
