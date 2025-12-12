@@ -78,14 +78,14 @@ class BlogGenerator {
 
   private async generateImage(title: string): Promise<string | undefined> {
     if (!this.isConfigured()) {
-      console.warn('Grok API not configured, skipping image generation');
-      return undefined;
+      console.warn('Grok API not configured, using placeholder image');
+      return await this.getPlaceholderImage(title);
     }
 
     try {
-      const imagePrompt = `Create a professional illustration for a blog post titled: "${title}". Style: modern tech, blockchain/cryptocurrency theme, clean and minimal design. Focus on security, innovation, and digital concepts. Make it suitable for a tech blog about crypto security.`;
+      const imagePrompt = `Create a professional illustration for a blog post titled: "${title}". Style: modern tech, blockchain/cryptocurrency theme, clean and minimal design with dark background. Focus on security, innovation, and digital concepts. Colors: green (#25d695), purple (#a855f7), and blue (#4d9cff) accents.`;
 
-      // Use xAI's image generation API
+      // Use xAI's Aurora image generation model
       const imageResponse = await fetch('https://api.x.ai/v1/images/generations', {
         method: 'POST',
         headers: {
@@ -94,9 +94,8 @@ class BlogGenerator {
         },
         body: JSON.stringify({
           prompt: imagePrompt,
-          model: 'grok-2-image',
+          model: 'grok-2-image-generation',
           n: 1,
-          size: '512x512',
           response_format: 'url'
         }),
       });
@@ -104,24 +103,93 @@ class BlogGenerator {
       if (!imageResponse.ok) {
         const errorText = await imageResponse.text();
         console.warn('Image generation failed:', imageResponse.status, errorText);
-        return undefined;
+        // Fall back to placeholder on error
+        return this.getPlaceholderImage(title);
       }
 
       const imageData = await imageResponse.json();
 
-      // Handle different response formats
-      if (imageData.data && imageData.data[0] && imageData.data[0].url) {
-        return imageData.data[0].url;
+      // Handle different response formats from xAI
+      if (imageData.data && imageData.data[0]) {
+        const imgData = imageData.data[0];
+        if (imgData.url) {
+          return imgData.url;
+        } else if (imgData.b64_json) {
+          // Convert base64 to data URL if that's the format returned
+          return `data:image/png;base64,${imgData.b64_json}`;
+        }
       } else if (imageData.url) {
         return imageData.url;
-      } else {
-        console.warn('Unexpected image response format:', imageData);
-        return undefined;
       }
+      
+      console.warn('Unexpected image response format:', JSON.stringify(imageData).substring(0, 200));
+      return await this.getPlaceholderImage(title);
     } catch (error) {
       console.warn('Image generation error:', error);
-      return undefined;
+      return await this.getPlaceholderImage(title);
     }
+  }
+
+  // Generate realistic images using completely free services
+  private async getPlaceholderImage(title: string): Promise<string> {
+    try {
+      // Use Lorem Picsum - completely free and reliable, no API key needed
+      // Generate a deterministic seed based on title for consistent images
+      const seed = this.generateDeterministicSeed(title);
+      return `https://picsum.photos/800/600?random=${seed}`;
+    } catch (error) {
+      console.warn('Picsum failed:', error);
+      // Ultimate fallback - improved placeholder with better colors
+      return this.getImprovedPlaceholder(title);
+    }
+  }
+
+  private generateDeterministicSeed(title: string): number {
+    // Create a deterministic number from the title for consistent images
+    let hash = 0;
+    for (let i = 0; i < title.length; i++) {
+      const char = title.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash) % 1000; // Keep it reasonable for the random parameter
+  }
+
+  private extractCryptoKeywords(title: string): string[] {
+    const cryptoTerms = [
+      'bitcoin', 'ethereum', 'crypto', 'blockchain', 'defi', 'nft', 'token', 'wallet',
+      'coreum', 'cosmos', 'sui', 'solana', 'trading', 'mining', 'staking', 'yield',
+      'portfolio', 'security', 'finance', 'investment', 'market', 'exchange'
+    ];
+
+    const lowerTitle = title.toLowerCase();
+    return cryptoTerms.filter(term => lowerTitle.includes(term));
+  }
+
+  private getImprovedPlaceholder(title: string): string {
+    // Professional color scheme - modern tech colors
+    const techColors = [
+      '0f172a', // Dark slate
+      '1e293b', // Slate
+      '334155', // Light slate
+      '0f1419', // Dark
+      '1a1a2e', // Dark blue-gray
+    ];
+
+    const accentColors = [
+      '00d4aa', // SHIELDNEST green
+      '8b5cf6', // Purple
+      '3b82f6', // Blue
+      '06b6d4', // Cyan
+      '10b981'  // Emerald
+    ];
+
+    const hash = title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const bgColor = techColors[hash % techColors.length];
+    const accentColor = accentColors[hash % accentColors.length];
+
+    // Create a modern gradient placeholder
+    return `https://via.placeholder.com/800x600/${bgColor}/${accentColor}?text=${encodeURIComponent(title.substring(0, 40))}`;
   }
 
   async generateBlogPosts(count: number = 10): Promise<BlogPostData[]> {

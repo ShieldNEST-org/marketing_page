@@ -27,9 +27,172 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [revealedElements, setRevealedElements] = useState<Set<string>>(new Set());
+  const [lastScrollTime, setLastScrollTime] = useState(0);
+  const [scrollVelocity, setScrollVelocity] = useState(0);
+  const [currentWord, setCurrentWord] = useState('Coreum');
+  const [animatingLetters, setAnimatingLetters] = useState<string[]>([]);
+  const [wordColor, setWordColor] = useState<'dark' | 'light'>('light');
 
   useEffect(() => {
     setIsVisible(true);
+  }, []);
+
+  // Lightweight word switching animation - Smooth letter-by-letter
+  useEffect(() => {
+    const words = ['Coreum', 'Cosmos'];
+    let currentIndex = 0;
+    let animationInterval: NodeJS.Timeout;
+    let wordInterval: NodeJS.Timeout;
+
+    const animateWordSwitch = () => {
+      const fromWord = words[currentIndex];
+      const toWord = words[(currentIndex + 1) % words.length];
+
+      // Clear any existing animation interval
+      if (animationInterval) {
+        clearInterval(animationInterval);
+      }
+
+      // Start with dark color for spelling animation
+      setWordColor('dark');
+
+      // Simple approach: show each letter of the new word one by one
+      let letterIndex = 0;
+      const newWordLetters = toWord.split('');
+
+      animationInterval = setInterval(() => {
+        if (letterIndex < newWordLetters.length) {
+          setAnimatingLetters(newWordLetters.slice(0, letterIndex + 1));
+          letterIndex++;
+        } else {
+          clearInterval(animationInterval);
+          // Word is complete - transition to light color
+          setTimeout(() => {
+            setWordColor('light');
+            // Brief pause to show the complete word in light color
+            setTimeout(() => {
+              setCurrentWord(toWord);
+              setAnimatingLetters([]);
+              setWordColor('light');
+              currentIndex = (currentIndex + 1) % words.length;
+            }, 800); // Show complete word for 800ms
+          }, 200);
+        }
+      }, 200); // Slightly slower for better readability
+    };
+
+    // Switch words every 5 seconds
+    wordInterval = setInterval(animateWordSwitch, 5000);
+
+    return () => {
+      if (animationInterval) clearInterval(animationInterval);
+      if (wordInterval) clearInterval(wordInterval);
+    };
+  }, []); // Empty dependency array - only run on mount
+
+  // Progressive card reveal animation for mobile
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+
+    if (!isMobile) {
+      // On desktop, show all elements immediately
+      setRevealedElements(new Set([
+        'infrastructure-title',
+        'infrastructure-description',
+        'infrastructure-item-1',
+        'infrastructure-item-2',
+        'infrastructure-item-3',
+        'infrastructure-item-4',
+        'infrastructure-item-5',
+        'security-title',
+        'security-description',
+        'security-item-1',
+        'security-item-2',
+        'security-item-3',
+        'security-item-4'
+      ]));
+      return;
+    }
+
+    let scrollTimeout: NodeJS.Timeout;
+    let lastScrollY = window.scrollY;
+    let lastTime = Date.now();
+
+    const handleScroll = () => {
+      const currentTime = Date.now();
+      const currentScrollY = window.scrollY;
+      const timeDelta = currentTime - lastTime;
+      const scrollDelta = Math.abs(currentScrollY - lastScrollY);
+
+      // Calculate scroll velocity (pixels per millisecond)
+      const velocity = scrollDelta / timeDelta;
+      setScrollVelocity(velocity);
+      setLastScrollTime(currentTime);
+
+      lastScrollY = currentScrollY;
+      lastTime = currentTime;
+
+      // Clear existing timeout
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+
+      // Set new timeout based on scroll velocity
+      // Faster scrolling = shorter reveal delay
+      const baseDelay = 800;
+      const velocityMultiplier = Math.max(0.3, Math.min(1, 1 - velocity * 10)); // 0.3 to 1
+      const revealDelay = baseDelay * velocityMultiplier;
+
+      scrollTimeout = setTimeout(() => {
+        const validatorSection = document.getElementById('validator');
+        if (!validatorSection) return;
+
+        const rect = validatorSection.getBoundingClientRect();
+        const isInView = rect.top < window.innerHeight && rect.bottom > 0;
+
+        if (isInView) {
+          const scrollProgress = Math.max(0, Math.min(1,
+            (window.innerHeight - rect.top) / (window.innerHeight + rect.height)
+          ));
+
+          const newRevealed = new Set(revealedElements);
+
+          // Progressive reveal sequence based on scroll progress
+          const revealThresholds = [
+            { progress: 0.1, element: 'infrastructure-title' },
+            { progress: 0.2, element: 'infrastructure-description' },
+            { progress: 0.3, element: 'infrastructure-item-1' },
+            { progress: 0.4, element: 'infrastructure-item-2' },
+            { progress: 0.5, element: 'infrastructure-item-3' },
+            { progress: 0.6, element: 'infrastructure-item-4' },
+            { progress: 0.7, element: 'infrastructure-item-5' },
+            { progress: 0.75, element: 'security-title' },
+            { progress: 0.8, element: 'security-description' },
+            { progress: 0.85, element: 'security-item-1' },
+            { progress: 0.9, element: 'security-item-2' },
+            { progress: 0.95, element: 'security-item-3' },
+            { progress: 1.0, element: 'security-item-4' }
+          ];
+
+          revealThresholds.forEach(({ progress, element }) => {
+            if (scrollProgress >= progress) {
+              newRevealed.add(element);
+            }
+          });
+
+          setRevealedElements(newRevealed);
+        }
+      }, revealDelay);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Initial check
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+    };
   }, []);
 
   const handleOpenModal = (e: React.MouseEvent) => {
@@ -104,7 +267,7 @@ export default function Home() {
             {/* Brand Name & Social Icons */}
             <div className="flex flex-col">
               <a href="/" className="hover:opacity-80 transition-opacity">
-                <h1 className="font-bold text-base text-white">
+                <h1 className="font-bold text-base text-gray-200">
                   SHIELDNEST
                 </h1>
               </a>
@@ -172,48 +335,101 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden px-6 min-h-screen flex items-center py-20">
-        {/* Animated Background */}
+        {/* Textured Grey Background with Depth */}
         <div className="absolute inset-0 overflow-hidden">
-          {/* Gradient Orbs - Smoother rendering */}
-          <div className="absolute top-20 left-10 w-[32rem] h-[32rem] bg-gradient-to-br from-[#25d695]/30 via-[#25d695]/10 to-transparent rounded-full blur-[120px] animate-pulse-slow opacity-60" style={{ willChange: 'transform, opacity' }}></div>
-          <div className="absolute top-40 right-20 w-[36rem] h-[36rem] bg-gradient-to-br from-purple-500/30 via-purple-500/10 to-transparent rounded-full blur-[120px] animate-pulse-slow opacity-60" style={{ animationDelay: '1s', willChange: 'transform, opacity' }}></div>
-          <div className="absolute bottom-20 left-1/3 w-[28rem] h-[28rem] bg-gradient-to-br from-blue-500/25 via-blue-500/8 to-transparent rounded-full blur-[100px] animate-pulse-slow opacity-60" style={{ animationDelay: '2s', willChange: 'transform, opacity' }}></div>
-          
-          {/* Animated Grid Lines */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_110%)] opacity-20"></div>
-          
-          {/* Floating Particles */}
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#25d695] rounded-full animate-float opacity-60 shadow-[0_0_8px_rgba(37,214,149,0.6)]"></div>
-          <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-purple-500 rounded-full animate-float-delayed opacity-60 shadow-[0_0_8px_rgba(168,85,247,0.6)]"></div>
-          <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-blue-500 rounded-full animate-float-slow opacity-60 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
-          <div className="absolute top-2/3 right-1/4 w-2 h-2 bg-[#25d695] rounded-full animate-float opacity-60 shadow-[0_0_8px_rgba(37,214,149,0.6)]" style={{ animationDelay: '1.5s' }}></div>
-          <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-purple-500 rounded-full animate-float-delayed opacity-60 shadow-[0_0_8px_rgba(168,85,247,0.6)]" style={{ animationDelay: '2.5s' }}></div>
+          {/* Base grey layer */}
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
+
+          {/* Darker texture overlay */}
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: `
+                radial-gradient(circle at 20% 80%, rgba(0,0,0,0.8) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0,0,0,0.7) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0,0,0,0.6) 0%, transparent 40%)
+              `
+            }}
+          />
+
+          {/* Subtle texture pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div
+              className="w-full h-full"
+              style={{
+                backgroundImage: `
+                  repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px),
+                  repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px)
+                `
+              }}
+            />
+          </div>
+
+          {/* Brand color accents - very subtle */}
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              background: `
+                radial-gradient(circle at 25% 25%, rgba(37, 214, 149, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.12) 0%, transparent 35%),
+                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 25%)
+              `
+            }}
+          />
+
+          {/* Fine grid texture */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#374151_1px,transparent_1px),linear-gradient(to_bottom,#374151_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-20"></div>
         </div>
 
         <div className="max-w-7xl mx-auto text-center relative z-10 w-full">
           <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <h1 
-              className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold mb-10 leading-tight"
+            <h1
+              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-10 leading-tight"
               style={{
                 fontFamily: 'var(--font-space-grotesk), sans-serif',
                 textShadow: '0 2px 4px rgba(0,0,0,0.3)',
               }}
             >
-              <span className="bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent">
-                Secure Your
+              <span className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 bg-clip-text text-transparent">
+                Secure, Earn and Learn
               </span>
               <br />
               <span className="text-gradient-coreum">
-                Crypto Portfolio
+                Crypto
               </span>
               <br />
-              <span className="bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent">
-                on Coreum
+              <span className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 bg-clip-text text-transparent">
+                on{' '}
+                <span
+                  className={`inline-block transition-all duration-500 ease-out ${
+                    wordColor === 'dark'
+                      ? 'text-gray-600'
+                      : 'bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 bg-clip-text text-transparent'
+                  }`}
+                >
+                  {animatingLetters.length > 0 ? (
+                    <span className="inline-flex">
+                      {animatingLetters.map((letter, index) => (
+                        <span
+                          key={`${letter}-${index}`}
+                          className="inline-block text-gray-600"
+                          style={{
+                            animation: `letterFade 0.3s ease-out ${index * 0.1}s both`
+                          }}
+                        >
+                          {letter}
+                        </span>
+                      ))}
+                    </span>
+                  ) : (
+                    currentWord
+                  )}
+                </span>
               </span>
             </h1>
             
             <p className="text-xl sm:text-2xl lg:text-3xl text-gray-400 mb-16 max-w-4xl mx-auto leading-relaxed">
-              Track, analyze, and protect your digital assets with enterprise-grade security and real-time insights
+              Your complete crypto journey: secure your portfolio, earn rewards, and master blockchain technology
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-32">
@@ -228,7 +444,7 @@ export default function Home() {
               
               <a 
                 href="#features"
-                className="px-10 py-5 bg-[#101216] text-white rounded-xl font-bold text-lg sm:text-xl border border-[rgba(37,214,149,0.3)] hover:border-[#25d695] transition-all duration-300 w-full sm:w-auto"
+                className="px-10 py-5 bg-[#101216] text-gray-200 rounded-xl font-bold text-lg sm:text-xl border border-[rgba(37,214,149,0.3)] hover:border-[#25d695] transition-all duration-300 w-full sm:w-auto"
               >
                 Learn More
               </a>
@@ -242,7 +458,7 @@ export default function Home() {
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500/20 to-teal-600/20 border border-teal-500/30 flex items-center justify-center mb-3 shadow-[0_0_10px_rgba(20,184,166,0.15)] transition-all duration-300">
                   <IoPieChartOutline className="w-7 h-7 text-teal-400 group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_8px_rgba(20,184,166,0.6)]" />
                 </div>
-                <div className="text-white font-semibold">Real-time Analytics</div>
+                <div className="text-gray-200 font-semibold">Real-time Analytics</div>
               </div>
             </div>
             
@@ -251,7 +467,7 @@ export default function Home() {
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 flex items-center justify-center mb-3 shadow-[0_0_10px_rgba(59,130,246,0.15)] transition-all duration-300">
                   <IoLockClosedOutline className="w-7 h-7 text-blue-400 group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
                 </div>
-                <div className="text-white font-semibold">Bank-level Security</div>
+                <div className="text-gray-200 font-semibold">Bank-level Security</div>
               </div>
             </div>
             
@@ -260,7 +476,7 @@ export default function Home() {
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 flex items-center justify-center mb-3 shadow-[0_0_10px_rgba(168,85,247,0.15)] transition-all duration-300">
                   <IoSpeedometerOutline className="w-7 h-7 text-purple-400 group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
                 </div>
-                <div className="text-white font-semibold">Lightning Fast</div>
+                <div className="text-gray-200 font-semibold">Lightning Fast</div>
               </div>
             </div>
 
@@ -270,7 +486,7 @@ export default function Home() {
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-600/20 border border-orange-500/30 flex items-center justify-center mb-3 shadow-[0_0_10px_rgba(255,140,66,0.15)] transition-all duration-300">
                   <IoGlobeOutline className="w-7 h-7 text-orange-400 group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_8px_rgba(255,140,66,0.6)]" />
                 </div>
-                <div className="text-white font-semibold text-sm">Multi-Chain</div>
+                <div className="text-gray-200 font-semibold text-sm">Multi-Chain</div>
                 <div className="text-gray-400 text-xs mt-1">Coming Soon</div>
               </div>
             </div>
@@ -281,14 +497,14 @@ export default function Home() {
       {/* Features Section */}
       <section id="features" className="py-20 px-6 bg-[#101216]">
         <div className="container mx-auto">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white text-center mb-16 leading-tight" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-100 text-center mb-16 leading-tight" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
             Everything You Need to <span className="text-[#25d695]">Manage Your Assets</span>
           </h2>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {[
               {
-                icon: <IoWalletOutline className="w-7 h-7" />,
+                icon: <IoWalletOutline className="w-5 h-5 sm:w-7 sm:h-7" />,
                 title: "Portfolio Tracking",
                 description: "Track all your Coreum assets in one secure dashboard with real-time price updates",
                 bgColor: "from-teal-500/20 to-teal-600/20",
@@ -300,7 +516,7 @@ export default function Home() {
                 iconDropShadow: "drop-shadow-[0_0_4px_rgba(20,184,166,0.3)]"
               },
               {
-                icon: <IoPieChartOutline className="w-7 h-7" />,
+                icon: <IoPieChartOutline className="w-5 h-5 sm:w-7 sm:h-7" />,
                 title: "Advanced Analytics",
                 description: "Gain insights with detailed charts, profit/loss tracking, and performance metrics",
                 bgColor: "from-cyan-500/20 to-cyan-600/20",
@@ -312,7 +528,7 @@ export default function Home() {
                 iconDropShadow: "drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]"
               },
               {
-                icon: <IoShieldCheckmarkOutline className="w-7 h-7" />,
+                icon: <IoShieldCheckmarkOutline className="w-5 h-5 sm:w-7 sm:h-7" />,
                 title: "Shield NFT Benefits",
                 description: "Exclusive features and rewards for Shield NFT holders with premium access",
                 bgColor: "from-purple-500/20 to-purple-600/20",
@@ -336,7 +552,7 @@ export default function Home() {
                 iconDropShadow: "drop-shadow-[0_0_4px_rgba(34,197,94,0.3)]"
               },
               {
-                icon: <IoPeopleOutline className="w-7 h-7" />,
+                icon: <IoPeopleOutline className="w-5 h-5 sm:w-7 sm:h-7" />,
                 title: "User Tiers",
                 description: "From visitor to private member - choose the level that fits your needs",
                 bgColor: "from-orange-500/20 to-orange-600/20",
@@ -348,7 +564,7 @@ export default function Home() {
                 iconDropShadow: "drop-shadow-[0_0_4px_rgba(249,115,22,0.3)]"
               },
               {
-                icon: <IoSettingsOutline className="w-7 h-7" />,
+                icon: <IoSettingsOutline className="w-5 h-5 sm:w-7 sm:h-7" />,
                 title: "Smart Automation",
                 description: "Automated portfolio rebalancing and smart notifications for price changes",
                 bgColor: "from-blue-500/20 to-blue-600/20",
@@ -360,17 +576,17 @@ export default function Home() {
                 iconDropShadow: "drop-shadow-[0_0_4px_rgba(59,130,246,0.3)]"
               }
             ].map((feature, index) => (
-              <div 
+              <div
                 key={index}
-                className={`group ${feature.cardColor} p-6 neo-transition ${feature.glowColor} transition-all duration-500`}
+                className={`group ${feature.cardColor} p-4 sm:p-6 neo-transition ${feature.glowColor} transition-all duration-500`}
               >
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.bgColor} border ${feature.borderColor} flex items-center justify-center mb-4 ${feature.iconGlow} transition-all duration-300`}>
+                <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${feature.bgColor} border ${feature.borderColor} flex items-center justify-center mb-3 sm:mb-4 ${feature.iconGlow} transition-all duration-300`}>
                   <div className={`${feature.iconColor} ${feature.iconDropShadow} group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
                     {feature.icon}
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
-                <p className="text-gray-400">{feature.description}</p>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-200 mb-2 sm:mb-3">{feature.title}</h3>
+                <p className="text-sm sm:text-base text-gray-400">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -382,7 +598,7 @@ export default function Home() {
         <div className="container mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-100 mb-6 leading-tight" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
                 Why Choose <span className="text-[#25d695]">SHIELDNEST?</span>
               </h2>
               
@@ -410,7 +626,7 @@ export default function Home() {
                       <IoCheckmarkCircleOutline className="w-6 h-6 text-green-400 drop-shadow-[0_0_4px_rgba(34,197,94,0.3)] group-hover:scale-110 transition-transform duration-300" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-2">{benefit.title}</h3>
+                      <h3 className="text-xl font-bold text-gray-200 mb-2">{benefit.title}</h3>
                       <p className="text-gray-400">{benefit.description}</p>
                     </div>
                   </div>
@@ -419,12 +635,28 @@ export default function Home() {
             </div>
 
             <div className="relative">
-              <div className="bg-[#101216] border border-gray-800 rounded-2xl p-8">
-                <div className="space-y-4">
-                  <div className="h-12 bg-gradient-to-r from-[rgba(37,214,149,0.3)] to-transparent rounded-lg animate-pulse"></div>
-                  <div className="h-24 bg-gradient-to-r from-[rgba(124,58,237,0.3)] to-transparent rounded-lg animate-pulse delay-100"></div>
-                  <div className="h-16 bg-gradient-to-r from-[rgba(59,130,246,0.3)] to-transparent rounded-lg animate-pulse delay-200"></div>
-                  <div className="h-20 bg-gradient-to-r from-[rgba(37,214,149,0.3)] to-transparent rounded-lg animate-pulse delay-300"></div>
+              {/* Stats/Metrics Display */}
+              <div className="neo-float-green p-8">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center p-4 bg-[#0e0e0e]/50 rounded-xl border border-[#25d695]/20">
+                    <div className="text-3xl font-bold text-[#25d695] mb-1">99.9%</div>
+                    <div className="text-sm text-gray-400">Uptime</div>
+                  </div>
+                  <div className="text-center p-4 bg-[#0e0e0e]/50 rounded-xl border border-purple-500/20">
+                    <div className="text-3xl font-bold text-purple-400 mb-1">24/7</div>
+                    <div className="text-sm text-gray-400">Monitoring</div>
+                  </div>
+                  <div className="text-center p-4 bg-[#0e0e0e]/50 rounded-xl border border-blue-500/20">
+                    <div className="text-3xl font-bold text-blue-400 mb-1">0</div>
+                    <div className="text-sm text-gray-400">Security Breaches</div>
+                  </div>
+                  <div className="text-center p-4 bg-[#0e0e0e]/50 rounded-xl border border-orange-500/20">
+                    <div className="text-3xl font-bold text-orange-400 mb-1">100%</div>
+                    <div className="text-sm text-gray-400">Transparent</div>
+                  </div>
+                </div>
+                <div className="mt-6 text-center">
+                  <p className="text-gray-400 text-sm">Trusted by the Coreum community</p>
                 </div>
               </div>
             </div>
@@ -436,7 +668,7 @@ export default function Home() {
       <section id="validator" className="py-20 px-6 bg-[#101216]">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-100 mb-6 leading-tight" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
               Enterprise-Grade <span className="text-[#25d695]">Validator Infrastructure</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
@@ -450,30 +682,74 @@ export default function Home() {
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 flex items-center justify-center mb-6 shadow-[0_0_10px_rgba(37,214,149,0.15)]">
                 <IoServerOutline className="w-8 h-8 text-green-400 drop-shadow-[0_0_8px_rgba(37,214,149,0.6)]" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Hardened Bare-Metal Servers</h3>
-              <p className="text-gray-300 mb-6">
+              <h3
+                className={`text-2xl font-bold text-gray-200 mb-4 transition-all duration-700 ${
+                  revealedElements.has('infrastructure-title')
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-4'
+                }`}
+              >
+                Hardened Bare-Metal Servers
+              </h3>
+              <p
+                className={`text-gray-300 mb-6 transition-all duration-700 delay-100 ${
+                  revealedElements.has('infrastructure-description')
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-4'
+                }`}
+              >
                 Our new validator runs on enterprise-grade bare-metal servers with exceptional performance:
               </p>
               <ul className="space-y-3">
-                <li className="flex items-start text-gray-300">
+                <li
+                  className={`flex items-start text-gray-300 transition-all duration-700 delay-200 ${
+                    revealedElements.has('infrastructure-item-1')
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-4'
+                  }`}
+                >
                   <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
-                  <span><strong className="text-white">12 cores</strong> @ 3.7GHz for maximum processing power</span>
+                  <span><strong className="text-gray-200">12 cores</strong> @ 3.7GHz for maximum processing power</span>
                 </li>
-                <li className="flex items-start text-gray-300">
+                <li
+                  className={`flex items-start text-gray-300 transition-all duration-700 delay-300 ${
+                    revealedElements.has('infrastructure-item-2')
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-4'
+                  }`}
+                >
                   <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
-                  <span><strong className="text-white">96GB RAM</strong> for high-throughput operations</span>
+                  <span><strong className="text-gray-200">96GB RAM</strong> for high-throughput operations</span>
                 </li>
-                <li className="flex items-start text-gray-300">
+                <li
+                  className={`flex items-start text-gray-300 transition-all duration-700 delay-400 ${
+                    revealedElements.has('infrastructure-item-3')
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-4'
+                  }`}
+                >
                   <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
-                  <span><strong className="text-white">Dual NVMe</strong> storage for ultra-fast I/O</span>
+                  <span><strong className="text-gray-200">Dual NVMe</strong> storage for ultra-fast I/O</span>
                 </li>
-                <li className="flex items-start text-gray-300">
+                <li
+                  className={`flex items-start text-gray-300 transition-all duration-700 delay-500 ${
+                    revealedElements.has('infrastructure-item-4')
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-4'
+                  }`}
+                >
                   <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
-                  <span><strong className="text-white">3Gbps NIC</strong> for low-latency network connectivity</span>
+                  <span><strong className="text-gray-200">3Gbps NIC</strong> for low-latency network connectivity</span>
                 </li>
-                <li className="flex items-start text-gray-300">
+                <li
+                  className={`flex items-start text-gray-300 transition-all duration-700 delay-600 ${
+                    revealedElements.has('infrastructure-item-5')
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-4'
+                  }`}
+                >
                   <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
-                  <span><strong className="text-white">Geographically distributed</strong> servers in different areas for better decentralization</span>
+                  <span><strong className="text-gray-200">Geographically distributed</strong> servers in different areas for better decentralization</span>
                 </li>
               </ul>
             </div>
@@ -483,26 +759,64 @@ export default function Home() {
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 flex items-center justify-center mb-6 shadow-[0_0_10px_rgba(168,85,247,0.15)]">
                 <IoShieldCheckmarkOutline className="w-8 h-8 text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Military-Grade Security</h3>
-              <p className="text-gray-300 mb-6">
+              <h3
+                className={`text-2xl font-bold text-gray-200 mb-4 transition-all duration-700 ${
+                  revealedElements.has('security-title')
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-4'
+                }`}
+              >
+                Military-Grade Security
+              </h3>
+              <p
+                className={`text-gray-300 mb-6 transition-all duration-700 delay-100 ${
+                  revealedElements.has('security-description')
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-4'
+                }`}
+              >
                 Your staking rewards are protected by enterprise-level security measures:
               </p>
               <ul className="space-y-3">
-                <li className="flex items-start text-gray-300">
+                <li
+                  className={`flex items-start text-gray-300 transition-all duration-700 delay-200 ${
+                    revealedElements.has('security-item-1')
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-4'
+                  }`}
+                >
                   <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
-                  <span><strong className="text-white">Multiple sentry nodes</strong> protecting validator from DDoS attacks</span>
+                  <span><strong className="text-gray-200">Multiple sentry nodes</strong> protecting validator from DDoS attacks</span>
                 </li>
-                <li className="flex items-start text-gray-300">
+                <li
+                  className={`flex items-start text-gray-300 transition-all duration-700 delay-300 ${
+                    revealedElements.has('security-item-2')
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-4'
+                  }`}
+                >
                   <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
-                  <span><strong className="text-white">3-of-5 multisig</strong> wallet protection using air-gapped devices</span>
+                  <span><strong className="text-gray-200">3-of-5 multisig</strong> wallet protection using air-gapped devices</span>
                 </li>
-                <li className="flex items-start text-gray-300">
+                <li
+                  className={`flex items-start text-gray-300 transition-all duration-700 delay-400 ${
+                    revealedElements.has('security-item-3')
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-4'
+                  }`}
+                >
                   <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
-                  <span><strong className="text-white">Multiple backups</strong> in place for maximum redundancy</span>
+                  <span><strong className="text-gray-200">Multiple backups</strong> in place for maximum redundancy</span>
                 </li>
-                <li className="flex items-start text-gray-300">
+                <li
+                  className={`flex items-start text-gray-300 transition-all duration-700 delay-500 ${
+                    revealedElements.has('security-item-4')
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-4'
+                  }`}
+                >
                   <IoCheckmarkCircleOutline className="mr-3 text-[#25d695] w-6 h-6 flex-shrink-0 mt-0.5" />
-                  <span><strong className="text-white">24/7 monitoring</strong> and automated failover systems</span>
+                  <span><strong className="text-gray-200">24/7 monitoring</strong> and automated failover systems</span>
                 </li>
               </ul>
             </div>
@@ -530,7 +844,7 @@ export default function Home() {
       <section className="py-20 px-6 neo-gradient-bg">
         <div className="container mx-auto">
           <div className="bg-[#101216] border border-[rgba(37,214,149,0.3)] rounded-2xl p-12 text-center">
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight text-center" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-100 mb-6 leading-tight text-center" style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
               Ready to Secure Your Portfolio?
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
@@ -555,20 +869,20 @@ export default function Home() {
             {/* Logo & Brand */}
             <div className="flex items-center gap-1.5">
               <a href="/" className="hover:opacity-80 transition-opacity flex-shrink-0">
-                <Image 
-                  src="/shld_dark.svg" 
-                  alt="ShieldNest Logo" 
-                  width={46} 
+                <Image
+                  src="/shld_dark.svg"
+                  alt="ShieldNest Logo"
+                  width={46}
                   height={46}
                   className="object-contain w-[46px] h-[46px]"
                 />
               </a>
-              
+
               <div className="flex flex-col">
                 <a href="/" className="hover:opacity-80 transition-opacity">
-                  <span className="text-lg font-bold text-white">SHIELDNEST</span>
+                  <span className="text-lg font-bold text-gray-200">SHIELDNEST</span>
                 </a>
-                
+
                 {/* Social Icons underneath */}
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <a
@@ -597,15 +911,17 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Product Links - Horizontal on desktop */}
-            <div className="flex items-center gap-6 text-sm">
-              <a href="#features" className="text-gray-400 hover:text-[#25d695] transition-colors">Features</a>
-              <a href="#benefits" className="text-gray-400 hover:text-[#25d695] transition-colors">Benefits</a>
-              <a href="#pricing" className="text-gray-400 hover:text-[#25d695] transition-colors">Pricing</a>
-              <a href="https://v1.shieldnest.org" target="_blank" rel="noopener noreferrer" className="text-[#A855F7] hover:text-[#25d695] transition-colors font-semibold">Launch App</a>
-              
+            {/* Product Links - Stack vertically on mobile, horizontal on desktop */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 text-sm">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                <a href="#features" className="text-gray-400 hover:text-[#25d695] transition-colors">Features</a>
+                <a href="#benefits" className="text-gray-400 hover:text-[#25d695] transition-colors">Benefits</a>
+                <a href="#pricing" className="text-gray-400 hover:text-[#25d695] transition-colors">Pricing</a>
+                <a href="https://v1.shieldnest.org" target="_blank" rel="noopener noreferrer" className="text-[#A855F7] hover:text-[#25d695] transition-colors font-semibold">Launch App</a>
+              </div>
+
               {/* Multi-Chain Badge */}
-              <div className="flex items-center px-3 py-1.5 bg-gradient-to-r from-[#25d695]/10 to-[#A855F7]/10 border border-[#25d695]/30 rounded-full ml-2">
+              <div className="flex items-center px-3 py-1.5 bg-gradient-to-r from-[#25d695]/10 to-[#A855F7]/10 border border-[#25d695]/30 rounded-full">
                 <span className="text-xs font-semibold text-[#25d695]">Multi-Chain</span>
                 <span className="ml-1.5 text-xs text-gray-400">Coming Soon</span>
               </div>
@@ -643,7 +959,7 @@ export default function Home() {
             {/* Close Button - Neomorphic */}
             <button
               onClick={handleCloseModal}
-              className="absolute top-6 right-6 text-gray-400 hover:text-white transition-all p-3 rounded-xl bg-[#0e0e0e] border border-gray-700 hover:border-[#25d695] hover:shadow-[0_0_15px_rgba(37,214,149,0.3)]"
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-200 transition-all p-3 rounded-xl bg-[#0e0e0e] border border-gray-700 hover:border-[#25d695] hover:shadow-[0_0_15px_rgba(37,214,149,0.3)]"
               aria-label="Close modal"
             >
               <IoCloseOutline className="w-6 h-6" />
@@ -657,7 +973,7 @@ export default function Home() {
               </div>
               
               <h2 
-                className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight"
+                className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-100 mb-6 leading-tight"
                 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}
               >
                 Join the Beta Waitlist
@@ -682,7 +998,7 @@ export default function Home() {
                 <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-green-500/30 to-green-600/30 border-2 border-green-500/50 mb-6 shadow-[0_0_30px_rgba(34,197,94,0.4)]">
                   <IoCheckmarkCircleOutline className="w-14 h-14 text-green-400" />
                 </div>
-                <p className="text-3xl sm:text-4xl text-white font-bold mb-4">You're on the list!</p>
+                <p className="text-3xl sm:text-4xl text-gray-100 font-bold mb-4">You're on the list!</p>
                 <p className="text-xl text-gray-300">We'll notify you when beta access is available.</p>
               </div>
             ) : (
@@ -698,7 +1014,7 @@ export default function Home() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="your.email@example.com"
-                    className="w-full px-6 py-4 text-lg bg-[#0e0e0e] border-2 border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#25d695] focus:ring-4 focus:ring-[#25d695]/20 transition-all shadow-[inset_0_2px_8px_rgba(0,0,0,0.3)]"
+                    className="w-full px-6 py-4 text-lg bg-[#0e0e0e] border-2 border-gray-700 rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-[#25d695] focus:ring-4 focus:ring-[#25d695]/20 transition-all shadow-[inset_0_2px_8px_rgba(0,0,0,0.3)]"
                     disabled={isSubmitting}
                   />
                   {errorMessage && (

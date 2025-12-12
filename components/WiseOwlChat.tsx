@@ -65,7 +65,7 @@ const parseMarkdown = (text: string) => {
     while ((match = boldRegex.exec(remaining)) !== null) {
       if (match.index > lastIndex) {
         const before = remaining.substring(lastIndex, match.index);
-        parts.push(...parseItalicAndCode(before, key));
+        parts.push(...parseLinksAndCode(before, key));
         key += 100;
       }
       parts.push(
@@ -77,30 +77,56 @@ const parseMarkdown = (text: string) => {
     }
 
     if (lastIndex < remaining.length) {
-      parts.push(...parseItalicAndCode(remaining.substring(lastIndex), key));
+      parts.push(...parseLinksAndCode(remaining.substring(lastIndex), key));
     }
 
     return parts;
   };
 
-  const parseItalicAndCode = (text: string, baseKey: number): (string | React.ReactElement)[] => {
+  const parseLinksAndCode = (text: string, baseKey: number): (string | React.ReactElement)[] => {
     const parts: (string | React.ReactElement)[] = [];
     
-    // Parse code `text`
+    // Parse links [text](url) and code `text`
+    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
     const codeRegex = /`(.+?)`/g;
+    
     let lastIndex = 0;
-    let match;
     let key = baseKey;
+    
+    // Combine both patterns to process in order
+    const combinedRegex = /(\[([^\]]+)\]\(([^)]+)\))|(`(.+?)`)/g;
+    let match;
 
-    while ((match = codeRegex.exec(text)) !== null) {
+    while ((match = combinedRegex.exec(text)) !== null) {
       if (match.index > lastIndex) {
         parts.push(text.substring(lastIndex, match.index));
       }
-      parts.push(
-        <code key={`code-${key++}`} className="bg-[rgba(37,214,149,0.18)] text-[#5ff5bc] px-2.5 py-1 rounded-md text-sm font-mono border border-[rgba(37,214,149,0.25)]">
-          {match[1]}
-        </code>
-      );
+      
+      if (match[1]) {
+        // It's a link [text](url)
+        const linkText = match[2];
+        const linkUrl = match[3];
+        parts.push(
+          <a 
+            key={`link-${key++}`} 
+            href={linkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#60a5fa] hover:text-[#93c5fd] underline decoration-[rgba(96,165,250,0.4)] hover:decoration-[rgba(96,165,250,0.8)] transition-colors cursor-pointer"
+          >
+            {linkText}
+          </a>
+        );
+      } else if (match[4]) {
+        // It's code `text`
+        const codeText = match[5];
+        parts.push(
+          <code key={`code-${key++}`} className="bg-[rgba(37,214,149,0.18)] text-[#5ff5bc] px-2.5 py-1 rounded-md text-sm font-mono border border-[rgba(37,214,149,0.25)]">
+            {codeText}
+          </code>
+        );
+      }
+      
       lastIndex = match.index + match[0].length;
     }
 
@@ -201,6 +227,7 @@ const WiseOwlChat = () => {
   const lastUserMessageRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const lastRotationUpdateRef = useRef(0);
 
   // Detect mobile viewport
   useEffect(() => {
@@ -232,10 +259,15 @@ const WiseOwlChat = () => {
 
       const deltaX = mouseX - buttonCenterX;
       const deltaY = mouseY - buttonCenterY;
-      
+
       const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI) + 180;
-      
-      setRotation(angle);
+
+      // Throttle rotation updates to ~60fps to prevent excessive re-renders
+      const now = Date.now();
+      if (now - lastRotationUpdateRef.current > 16) {
+        setRotation(angle);
+        lastRotationUpdateRef.current = now;
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove, { capture: true, passive: true });
