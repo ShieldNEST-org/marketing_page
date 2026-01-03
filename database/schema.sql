@@ -44,6 +44,35 @@ CREATE POLICY "Public read access for blog posts" ON blog_posts
 CREATE POLICY "Service role can manage blog posts" ON blog_posts
     FOR ALL USING (auth.role() = 'service_role');
 
+-- Create inquiries table for contact form submissions
+CREATE TABLE IF NOT EXISTS inquiries (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL,
+  inquiry_type TEXT NOT NULL DEFAULT 'general',
+  status TEXT NOT NULL DEFAULT 'unread' CHECK (status IN ('unread', 'read', 'responded', 'archived')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Create indexes for inquiries
+CREATE INDEX IF NOT EXISTS idx_inquiries_created_at ON inquiries (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_inquiries_status ON inquiries (status);
+CREATE INDEX IF NOT EXISTS idx_inquiries_email ON inquiries (email);
+
+-- Create updated_at trigger for inquiries
+CREATE TRIGGER update_inquiries_updated_at
+    BEFORE UPDATE ON inquiries
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- Enable Row Level Security for inquiries
+ALTER TABLE inquiries ENABLE ROW LEVEL SECURITY;
+
+-- Create policy for service role to manage inquiries
+CREATE POLICY "Service role can manage inquiries" ON inquiries
+    FOR ALL USING (auth.role() = 'service_role');
+
 -- Create function to generate slug from title
 CREATE OR REPLACE FUNCTION generate_slug(title TEXT)
 RETURNS TEXT AS $$

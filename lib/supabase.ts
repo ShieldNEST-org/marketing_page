@@ -52,6 +52,16 @@ export interface BlogPost {
   updated_at: string;
 }
 
+export interface Inquiry {
+  id: string;
+  email: string;
+  message: string;
+  inquiry_type: string;
+  status: 'unread' | 'read' | 'responded' | 'archived';
+  created_at: string;
+  updated_at: string;
+}
+
 // Database functions
 export async function getTodaysPosts(): Promise<BlogPost[]> {
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
